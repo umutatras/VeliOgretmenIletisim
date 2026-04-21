@@ -31,7 +31,7 @@ public class DeleteStudentCommandHandler : IRequestHandler<DeleteStudentCommand,
         var userId = _currentUserService.UserId;
         // Yetki Kontrolü: Admin her şeyi silebilir, öğretmen sadece kendine bağlı öğrenciyi silebilir
         var isAdmin = _currentUserService.Role == "Admin";
-        
+
         if (!isAdmin)
         {
             var teacher = await _uow.GetRepository<Teacher>()

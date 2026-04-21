@@ -48,10 +48,10 @@ public class AdminAddStudentCommandHandler : IRequestHandler<AdminAddStudentComm
         {
             foreach (var tId in request.TeacherIds.Distinct())
             {
-                student.StudentTeachers.Add(new StudentTeacher 
-                { 
+                student.StudentTeachers.Add(new StudentTeacher
+                {
                     TeacherId = tId,
-                    IsPrimary = tId == request.TeacherIds.First() 
+                    IsPrimary = tId == request.TeacherIds.First()
                 });
             }
         }
@@ -60,7 +60,7 @@ public class AdminAddStudentCommandHandler : IRequestHandler<AdminAddStudentComm
         await _uow.SaveChangesAsync(cancellationToken);
 
         // Real-time notification to Parent
-        await _notificationService.SendToUserAsync(parent.AppUserId, 
+        await _notificationService.SendToUserAsync(parent.AppUserId,
             $"{student.FirstName} {student.LastName} isimli öğrenci hesabınızla ilişkilendirildi.", "StudentAdded");
 
         return Result<Guid>.Success(student.Id, "Student registered and linked successfully.");

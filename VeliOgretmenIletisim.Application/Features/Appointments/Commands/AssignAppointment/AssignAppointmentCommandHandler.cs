@@ -55,7 +55,7 @@ public class AssignAppointmentCommandHandler : IRequestHandler<AssignAppointment
         await _uow.GetRepository<Appointment>().AddAsync(appointment);
         await _uow.SaveChangesAsync(cancellationToken);
 
-        await _notificationService.SendToUserAsync(availability.Teacher.AppUserId, 
+        await _notificationService.SendToUserAsync(availability.Teacher.AppUserId,
             $"Yeni bir randevu talebi var: {student.FirstName} {student.LastName} - {availability.StartTime:dd/MM/yyyy HH:mm}", "Randevu");
 
         return Result.Success("Randevu başarıyla oluşturuldu.");

@@ -41,7 +41,7 @@ public class GetAuditLogsQueryHandler : IRequestHandler<GetAuditLogsQuery, Resul
             .OrderByDescending(x => x.CreatedDate);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)

@@ -1,17 +1,15 @@
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.RateLimiting;
-using System.Threading.RateLimiting;
-using VeliOgretmenIletisim.Infrastructure.Hubs;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using VeliOgretmenIletisim.Application;
-using VeliOgretmenIletisim.Application.Interfaces.Security;
 using VeliOgretmenIletisim.Domain.Entities;
 using VeliOgretmenIletisim.Infrastructure;
+using VeliOgretmenIletisim.Infrastructure.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,10 +105,10 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<VeliOgretmenIletisim.Infrastructure.Persistence.Context.ApplicationDbContext>();
         var userManager = services.GetRequiredService<UserManager<AppUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-        
+
         // Auto Migration
         await context.Database.MigrateAsync();
-        
+
         await VeliOgretmenIletisim.Infrastructure.Persistence.ApplicationDbContextSeed.SeedAsync(context, userManager, roleManager);
     }
     catch (Exception ex)

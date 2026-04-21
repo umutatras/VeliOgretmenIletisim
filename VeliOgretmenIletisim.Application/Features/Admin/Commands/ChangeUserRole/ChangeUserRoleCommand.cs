@@ -25,13 +25,13 @@ public class ChangeUserRoleCommandHandler : IRequestHandler<ChangeUserRoleComman
 
         // Get current roles
         var currentRoles = await _userManager.GetRolesAsync(user);
-        
+
         // Remove from current roles
         await _userManager.RemoveFromRolesAsync(user, currentRoles);
-        
+
         // Add to new role
         var result = await _userManager.AddToRoleAsync(user, request.NewRole);
-        
+
         if (!result.Succeeded)
             return Result.Failure(result.Errors.Select(e => e.Description).ToList());
 

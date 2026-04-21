@@ -19,7 +19,7 @@ public class StudentTeacherConfiguration : IEntityTypeConfiguration<StudentTeach
             .WithMany(t => t.StudentTeachers)
             .HasForeignKey(x => x.TeacherId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         builder.Property(x => x.IsPrimary).HasDefaultValue(false);
     }
 }

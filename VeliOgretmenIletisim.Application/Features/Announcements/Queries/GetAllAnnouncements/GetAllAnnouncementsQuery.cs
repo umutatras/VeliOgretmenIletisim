@@ -40,13 +40,13 @@ public class GetAllAnnouncementsQueryHandler : IRequestHandler<GetAllAnnouncemen
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var searchTerm = request.SearchTerm.Trim().ToLower();
-            query = query.Where(a => 
-                a.Title.ToLower().Contains(searchTerm) || 
+            query = query.Where(a =>
+                a.Title.ToLower().Contains(searchTerm) ||
                 a.Content.ToLower().Contains(searchTerm));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)

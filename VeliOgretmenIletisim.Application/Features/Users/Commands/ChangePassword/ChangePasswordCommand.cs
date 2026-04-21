@@ -34,7 +34,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
             return Result.Failure("User not found.");
 
         var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
-        
+
         if (!result.Succeeded)
             return Result.Failure(result.Errors.Select(e => e.Description).ToList());
 

@@ -27,7 +27,7 @@ public class GetUsersByRoleQueryHandler : IRequestHandler<GetUsersByRoleQuery, R
                 .OrderBy(t => t.AppUser.FirstName)
                 .Select(t => new UserBriefDto(t.Id, $"{t.AppUser.FirstName} {t.AppUser.LastName}", t.AppUser.Email!))
                 .ToListAsync(cancellationToken);
-            
+
             return Result<List<UserBriefDto>>.Success(teachers);
         }
 
@@ -40,7 +40,7 @@ public class GetUsersByRoleQueryHandler : IRequestHandler<GetUsersByRoleQuery, R
                 .OrderBy(p => p.AppUser.FirstName)
                 .Select(p => new UserBriefDto(p.Id, $"{p.AppUser.FirstName} {p.AppUser.LastName}", p.AppUser.Email!))
                 .ToListAsync(cancellationToken);
-            
+
             return Result<List<UserBriefDto>>.Success(parents);
         }
 

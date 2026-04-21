@@ -26,13 +26,13 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
         user.FirstName = request.FullName.Split(' ').FirstOrDefault() ?? "";
         user.LastName = request.FullName.Contains(' ') ? request.FullName.Substring(request.FullName.IndexOf(' ') + 1) : "";
         user.PhoneNumber = request.PhoneNumber;
-        
+
         if (!string.IsNullOrEmpty(request.Email) && request.Email != user.Email)
         {
             var emailExists = await _userManager.FindByEmailAsync(request.Email);
             if (emailExists != null)
                 return Result.Failure("Bu e-posta adresi zaten kullanımda.");
-            
+
             user.Email = request.Email;
             user.UserName = request.Email;
         }

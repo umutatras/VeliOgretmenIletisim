@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VeliOgretmenIletisim.Application.Features.Announcements.Commands.CreateAnnouncement;
 using VeliOgretmenIletisim.Application.Features.Availabilities.Commands.CreateAvailability;
-using VeliOgretmenIletisim.Application.Features.Availabilities.Commands.UpdateAvailability;
 using VeliOgretmenIletisim.Application.Features.Availabilities.Commands.DeleteAvailability;
+using VeliOgretmenIletisim.Application.Features.Availabilities.Commands.UpdateAvailability;
 using VeliOgretmenIletisim.Application.Features.MeetingNotes.Commands.CreateMeetingNote;
-using VeliOgretmenIletisim.Application.Features.Students.Commands.TeacherAddStudent;
 using VeliOgretmenIletisim.Application.Features.Students.Commands.DeleteStudent;
+using VeliOgretmenIletisim.Application.Features.Students.Commands.TeacherAddStudent;
 using VeliOgretmenIletisim.Application.Features.Students.Commands.UpdateStudent;
 using VeliOgretmenIletisim.Application.Features.Teachers.Queries.GetMyStudentsForTeacher;
 

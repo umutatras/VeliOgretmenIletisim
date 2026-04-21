@@ -32,7 +32,7 @@ public class GetMeetingNotesQueryHandler : IRequestHandler<GetMeetingNotesQuery,
     public async Task<Result<PagedResult<MeetingNoteDto>>> Handle(GetMeetingNotesQuery request, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        
+
         var query = _uow.GetRepository<MeetingNote>()
             .GetAll()
             .AsNoTracking()
@@ -42,7 +42,7 @@ public class GetMeetingNotesQueryHandler : IRequestHandler<GetMeetingNotesQuery,
             .OrderByDescending(m => m.CreatedDate);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)

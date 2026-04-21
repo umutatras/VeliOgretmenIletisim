@@ -38,7 +38,7 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
 
             if (teacher == null)
                 return Result<Guid>.Failure("Giriş yapan kullanıcının öğretmen profili bulunamadı.");
-            
+
             finalTeacherIds.Add(teacher.Id);
         }
 
@@ -69,8 +69,8 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
         // Add Teacher assignments
         foreach (var tId in finalTeacherIds.Distinct())
         {
-            student.StudentTeachers.Add(new StudentTeacher 
-            { 
+            student.StudentTeachers.Add(new StudentTeacher
+            {
                 TeacherId = tId,
                 IsPrimary = tId == finalTeacherIds.First() // İlk seçilen ana öğretmen olsun
             });

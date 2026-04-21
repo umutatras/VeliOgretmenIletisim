@@ -33,7 +33,7 @@ public static class ApplicationDbContextSeed
                 EmailConfirmed = true,
                 IsActive = true,
                 IsApproved = true,
-                Role = UserRole.Admin 
+                Role = UserRole.Admin
             };
 
             var result = await userManager.CreateAsync(adminUser, "Admin123*");
@@ -149,10 +149,10 @@ public static class ApplicationDbContextSeed
                         StudentNumber = (1000 + i).ToString(),
                         ParentId = parentIds[rnd.Next(parentIds.Count)]
                     };
-                    
+
                     var randomTeacherId = teacherIds[rnd.Next(teacherIds.Count)];
                     student.StudentTeachers.Add(new StudentTeacher { TeacherId = randomTeacherId, IsPrimary = true });
-                    
+
                     // Rastgele ikinci bir öğretmen daha ekleyelim her ikinci öğrenciye
                     if (i % 2 == 0)
                     {
@@ -172,7 +172,7 @@ public static class ApplicationDbContextSeed
         // 7. Special Test Scenario: Fatma Kılınç
         var fatmaEmail = "fatma@gmail.com";
         var fatmaUser = await userManager.FindByEmailAsync(fatmaEmail);
-        
+
         if (fatmaUser == null)
         {
             fatmaUser = new AppUser
@@ -241,7 +241,7 @@ public static class ApplicationDbContextSeed
                         MaxCapacity = 5,
                         IsGroup = true
                     });
-                    
+
                     context.Availabilities.Add(new Availability
                     {
                         TeacherId = teacher.Id,
@@ -273,7 +273,7 @@ public static class ApplicationDbContextSeed
             };
             await userManager.CreateAsync(ahmetTeacherUser, "Teacher123*");
             await userManager.AddToRoleAsync(ahmetTeacherUser, "Teacher");
-            
+
             var dept = await context.Departments.FirstOrDefaultAsync();
             var teacherProfile = new Teacher
             {

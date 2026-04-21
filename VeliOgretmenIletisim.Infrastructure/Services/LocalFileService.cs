@@ -19,7 +19,7 @@ public class LocalFileService : IFileService
             throw new ArgumentException("File is empty.");
 
         var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", folder);
-        
+
         if (!Directory.Exists(uploadsFolder))
             Directory.CreateDirectory(uploadsFolder);
 

@@ -45,14 +45,14 @@ public class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, R
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var searchTerm = request.SearchTerm.Trim().ToLower();
-            query = query.Where(s => 
-                s.FirstName.ToLower().Contains(searchTerm) || 
-                s.LastName.ToLower().Contains(searchTerm) || 
+            query = query.Where(s =>
+                s.FirstName.ToLower().Contains(searchTerm) ||
+                s.LastName.ToLower().Contains(searchTerm) ||
                 s.StudentNumber.ToLower().Contains(searchTerm));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .OrderByDescending(x => x.CreatedDate)
             .Skip((request.PageNumber - 1) * request.PageSize)
@@ -64,13 +64,13 @@ public class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, R
                 LastName = s.LastName,
                 StudentNumber = s.StudentNumber,
                 PhoneNumber = s.PhoneNumber,
-                ParentName = s.Parent != null && s.Parent.AppUser != null 
-                    ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName 
+                ParentName = s.Parent != null && s.Parent.AppUser != null
+                    ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName
                     : "Bilinmiyor",
                 ParentId = s.ParentId,
                 TeacherNames = s.StudentTeachers
-                    .Select(st => st.Teacher != null && st.Teacher.AppUser != null 
-                        ? st.Teacher.AppUser.FirstName + " " + st.Teacher.AppUser.LastName 
+                    .Select(st => st.Teacher != null && st.Teacher.AppUser != null
+                        ? st.Teacher.AppUser.FirstName + " " + st.Teacher.AppUser.LastName
                         : "Bilinmiyor")
                     .ToList(),
                 TeacherIds = s.StudentTeachers.Select(st => st.TeacherId).ToList()

@@ -55,7 +55,7 @@ public class UpdateStudentCommandHandler : IRequestHandler<UpdateStudentCommand,
             var numberExists = await _uow.GetRepository<Student>()
                 .GetAll()
                 .AnyAsync(s => s.StudentNumber == request.StudentNumber, cancellationToken);
-            
+
             if (numberExists)
                 return Result.Failure($"'{request.StudentNumber}' numaralı öğrenci zaten kayıtlı.");
         }
@@ -64,7 +64,7 @@ public class UpdateStudentCommandHandler : IRequestHandler<UpdateStudentCommand,
         student.LastName = request.LastName;
         student.StudentNumber = request.StudentNumber;
         student.PhoneNumber = request.PhoneNumber;
-        
+
         if (role == "Admin")
         {
             student.ParentId = request.ParentId;
@@ -77,15 +77,15 @@ public class UpdateStudentCommandHandler : IRequestHandler<UpdateStudentCommand,
             var existingLinks = await _uow.GetRepository<StudentTeacher>()
                 .Where(st => st.StudentId == student.Id)
                 .ToListAsync(cancellationToken);
-            
+
             foreach (var link in existingLinks)
             {
                 _uow.GetRepository<StudentTeacher>().Delete(link);
             }
-            
+
             // Önce silme işlemini kaydet (Bu, takip çakışmalarını önler)
             await _uow.SaveChangesAsync(cancellationToken);
-            
+
             // Yerel koleksiyonu boşalt
             student.StudentTeachers.Clear();
 
@@ -94,8 +94,8 @@ public class UpdateStudentCommandHandler : IRequestHandler<UpdateStudentCommand,
             int count = 0;
             foreach (var tId in newIds)
             {
-                var newLink = new StudentTeacher 
-                { 
+                var newLink = new StudentTeacher
+                {
                     StudentId = student.Id,
                     TeacherId = tId,
                     IsPrimary = (count == 0)

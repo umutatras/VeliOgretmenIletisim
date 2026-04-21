@@ -26,12 +26,13 @@ public class DashboardController : BaseApiController
         if (parent == null) return NotFound("Fatma parent profile not found");
 
         var students = await context.Students.Where(s => s.ParentId == parent.Id).Include(s => s.StudentTeachers).ToListAsync();
-        
+
         var teacherIds = students.SelectMany(s => s.StudentTeachers).Select(st => st.TeacherId).Distinct().ToList();
-        
+
         var availabilities = await context.Availabilities.Where(a => teacherIds.Contains(a.TeacherId) && a.StartTime > DateTime.Now).ToListAsync();
 
-        return Ok(new {
+        return Ok(new
+        {
             UserId = user.Id,
             ParentId = parent.Id,
             StudentCount = students.Count,
@@ -54,7 +55,8 @@ public class DashboardController : BaseApiController
 
         var appointments = await context.Appointments.Where(a => a.Availability.TeacherId == teacher.Id).ToListAsync();
 
-        return Ok(new {
+        return Ok(new
+        {
             UserId = user.Id,
             TeacherId = teacher.Id,
             AppointmentCount = appointments.Count,
@@ -67,7 +69,7 @@ public class DashboardController : BaseApiController
     public async Task<IActionResult> FixDb()
     {
         var context = HttpContext.RequestServices.GetRequiredService<VeliOgretmenIletisim.Infrastructure.Persistence.Context.ApplicationDbContext>();
-        try 
+        try
         {
             await context.Database.ExecuteSqlRawAsync(@"
                 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('Appointments') AND name = 'TeacherId')

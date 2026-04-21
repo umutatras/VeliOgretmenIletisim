@@ -4,12 +4,12 @@ using VeliOgretmenIletisim.Application.Common.Models;
 namespace VeliOgretmenIletisim.Application.Features.Teachers.Queries.GetMyStudentsForTeacher;
 
 public record TeacherStudentDto(
-    Guid Id, 
-    string FirstName, 
-    string LastName, 
-    string StudentNumber, 
+    Guid Id,
+    string FirstName,
+    string LastName,
+    string StudentNumber,
     string PhoneNumber,
-    Guid ParentId, 
+    Guid ParentId,
     string ParentName,
     List<string> TeacherNames,
     List<Guid> TeacherIds

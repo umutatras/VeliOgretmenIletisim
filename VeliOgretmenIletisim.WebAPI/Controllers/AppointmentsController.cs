@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VeliOgretmenIletisim.Application.Features.Appointments.Commands.AssignAppointment;
 using VeliOgretmenIletisim.Application.Features.Appointments.Queries.GetAppointments;
 
 namespace VeliOgretmenIletisim.WebAPI.Controllers;

@@ -4,7 +4,6 @@ using VeliOgretmenIletisim.Application.Common.Models;
 using VeliOgretmenIletisim.Application.Interfaces.Repositories;
 using VeliOgretmenIletisim.Application.Interfaces.Security;
 using VeliOgretmenIletisim.Domain.Entities;
-using VeliOgretmenIletisim.Domain.Enums;
 
 namespace VeliOgretmenIletisim.Application.Features.Complaints.Queries.GetComplaints;
 
@@ -50,7 +49,7 @@ public class GetComplaintsQueryHandler : IRequestHandler<GetComplaintsQuery, Res
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)

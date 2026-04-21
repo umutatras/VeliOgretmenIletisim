@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VeliOgretmenIletisim.Application.Features.Admin.Commands.ApproveUser;
+using VeliOgretmenIletisim.Application.Features.Admin.Queries.GetPendingApprovals;
+using VeliOgretmenIletisim.Application.Features.Admin.Queries.GetUsersByRole;
 using VeliOgretmenIletisim.Application.Features.Departments.Commands.CreateDepartment;
 using VeliOgretmenIletisim.Application.Features.Departments.Commands.DeleteDepartment;
 using VeliOgretmenIletisim.Application.Features.Departments.Queries.GetAllDepartments;
@@ -9,8 +11,6 @@ using VeliOgretmenIletisim.Application.Features.Students.Commands.DeleteStudent;
 using VeliOgretmenIletisim.Application.Features.Students.Commands.UpdateStudent;
 using VeliOgretmenIletisim.Application.Features.Students.Queries.GetAllStudents;
 using VeliOgretmenIletisim.Application.Features.Teachers.Commands.AssignDepartment;
-using VeliOgretmenIletisim.Application.Features.Admin.Queries.GetUsersByRole;
-using VeliOgretmenIletisim.Application.Features.Admin.Queries.GetPendingApprovals;
 using VeliOgretmenIletisim.Domain.Enums;
 
 namespace VeliOgretmenIletisim.WebAPI.Controllers;

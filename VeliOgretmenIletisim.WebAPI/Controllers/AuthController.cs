@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using VeliOgretmenIletisim.Application.Features.Auth.Queries.Login;
 using VeliOgretmenIletisim.Application.Features.Auth.Commands.Register;
+using VeliOgretmenIletisim.Application.Features.Auth.Queries.Login;
 
 namespace VeliOgretmenIletisim.WebAPI.Controllers;
 

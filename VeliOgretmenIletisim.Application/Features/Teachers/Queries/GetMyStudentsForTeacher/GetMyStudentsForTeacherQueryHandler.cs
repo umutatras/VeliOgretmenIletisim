@@ -47,9 +47,9 @@ public class GetMyStudentsForTeacherQueryHandler : IRequestHandler<GetMyStudents
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var searchTerm = request.SearchTerm.Trim().ToLower();
-            studentsQuery = studentsQuery.Where(s => 
-                s.FirstName.ToLower().Contains(searchTerm) || 
-                s.LastName.ToLower().Contains(searchTerm) || 
+            studentsQuery = studentsQuery.Where(s =>
+                s.FirstName.ToLower().Contains(searchTerm) ||
+                s.LastName.ToLower().Contains(searchTerm) ||
                 s.StudentNumber.ToLower().Contains(searchTerm));
         }
 
@@ -66,12 +66,12 @@ public class GetMyStudentsForTeacherQueryHandler : IRequestHandler<GetMyStudents
                 s.StudentNumber,
                 s.PhoneNumber,
                 s.ParentId,
-                s.Parent != null && s.Parent.AppUser != null 
-                    ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName 
+                s.Parent != null && s.Parent.AppUser != null
+                    ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName
                     : "Bilinmiyor",
                 s.StudentTeachers
-                    .Select(st => st.Teacher != null && st.Teacher.AppUser != null 
-                        ? st.Teacher.AppUser.FirstName + " " + st.Teacher.AppUser.LastName 
+                    .Select(st => st.Teacher != null && st.Teacher.AppUser != null
+                        ? st.Teacher.AppUser.FirstName + " " + st.Teacher.AppUser.LastName
                         : "Bilinmiyor")
                     .ToList(),
                 s.StudentTeachers.Select(st => st.TeacherId).ToList()

@@ -39,7 +39,7 @@ public class AnswerComplaintCommandHandler : IRequestHandler<AnswerComplaintComm
         await _uow.SaveChangesAsync(cancellationToken);
 
         // Real-time notification to Parent
-        await _notificationService.SendToUserAsync(complaint.Parent.AppUserId, 
+        await _notificationService.SendToUserAsync(complaint.Parent.AppUserId,
             $"Your complaint '{complaint.Subject}' has been answered by the Admin.", "ComplaintAnswered");
 
         return Result.Success("Complaint answered successfully.");

@@ -21,7 +21,7 @@ public class GetMyStudentsQueryHandler : IRequestHandler<GetMyStudentsQuery, Res
     public async Task<Result<List<MyStudentDto>>> Handle(GetMyStudentsQuery request, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        
+
         // Find the parent profile linked to this user
         var parent = await _uow.GetRepository<Parent>()
             .GetAll()

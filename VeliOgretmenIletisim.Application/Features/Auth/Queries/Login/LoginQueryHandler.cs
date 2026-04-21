@@ -1,8 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using VeliOgretmenIletisim.Application.Common.Models;
-using VeliOgretmenIletisim.Application.Interfaces.Repositories;
 using VeliOgretmenIletisim.Application.Interfaces.Security;
 using VeliOgretmenIletisim.Domain.Entities;
 
@@ -29,7 +27,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, Result<LoginRespons
         }
 
         var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
-        
+
         if (!isPasswordValid)
         {
             return Result<LoginResponseDto>.Failure("Invalid email or password.");

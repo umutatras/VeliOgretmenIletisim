@@ -41,8 +41,8 @@ public class GetAppointmentsQueryHandler : IRequestHandler<GetAppointmentsQuery,
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var searchTerm = request.SearchTerm.Trim().ToLower();
-            query = query.Where(a => 
-                (a.Parent.AppUser.FirstName + " " + a.Parent.AppUser.LastName).ToLower().Contains(searchTerm) || 
+            query = query.Where(a =>
+                (a.Parent.AppUser.FirstName + " " + a.Parent.AppUser.LastName).ToLower().Contains(searchTerm) ||
                 (a.Student.FirstName + " " + a.Student.LastName).ToLower().Contains(searchTerm) ||
                 (a.Availability.Teacher.AppUser.FirstName + " " + a.Availability.Teacher.AppUser.LastName).ToLower().Contains(searchTerm));
         }

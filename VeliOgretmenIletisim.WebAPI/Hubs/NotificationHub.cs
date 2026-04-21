@@ -13,14 +13,14 @@ public class NotificationHub : Hub
         if (!string.IsNullOrEmpty(userId))
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, userId);
-            
+
             var role = Context.User?.FindFirstValue(ClaimTypes.Role);
             if (!string.IsNullOrEmpty(role))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, role);
             }
         }
-        
+
         await base.OnConnectedAsync();
     }
 
@@ -30,14 +30,14 @@ public class NotificationHub : Hub
         if (!string.IsNullOrEmpty(userId))
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId);
-            
+
             var role = Context.User?.FindFirstValue(ClaimTypes.Role);
             if (!string.IsNullOrEmpty(role))
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, role);
             }
         }
-        
+
         await base.OnDisconnectedAsync(exception);
     }
 }
