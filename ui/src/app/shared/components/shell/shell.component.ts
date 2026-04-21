@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -20,6 +20,7 @@ export class ShellComponent {
   private userService = inject(UserService);
   private router = inject(Router);
   private notificationService = inject(NotificationService);
+  private renderer = inject(Renderer2);
 
   currentUser = this.authService.currentUser;
   userName = computed(() => this.currentUser()?.userName || 'User');
@@ -28,6 +29,19 @@ export class ShellComponent {
   constructor() {
     this.profilePicture.set(this.currentUser()?.profilePicturePath || null);
     this.notificationService.startConnection();
+  }
+
+  toggleSidebar() {
+    const body = document.body;
+    const sidebar = document.querySelector('.app-sidebar');
+    
+    if (body.classList.contains('sidenav-toggled')) {
+      body.classList.remove('sidenav-toggled');
+      sidebar?.classList.remove('open');
+    } else {
+      body.classList.add('sidenav-toggled');
+      sidebar?.classList.add('open');
+    }
   }
 
   logout() {

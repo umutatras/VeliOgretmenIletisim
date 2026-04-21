@@ -4,6 +4,7 @@
     <div class="app-header header sticky">
       <div class="container-fluid main-container">
         <div class="d-flex align-items-center">
+          <a (click)="toggleSidebar()" aria-label="Hide Sidebar" class="app-sidebar__toggle" href="javascript:void(0)"></a>
           <a class="logo-horizontal" href="/">
             <img src="/assets/images/brand/ualogosiyah.png" class="header-brand-img desktop-logo" alt="logo" style="height: 2.5rem !important; display: block !important;">
             <span class="h3 font-weight-bold text-primary mb-0 ms-2" style="vertical-align: middle;">SCHOOL CONNECT</span>
@@ -160,5 +161,6 @@
         </div>
       </div>
     </div>
+    <div class="app-sidebar-overlay" (click)="toggleSidebar()"></div>
   </div>
 </div>
