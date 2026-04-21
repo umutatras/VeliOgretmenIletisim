@@ -32,4 +32,25 @@ public class UsersController : BaseApiController
     {
         return HandleResult(await Mediator.Send(command));
     }
+
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] VeliOgretmenIletisim.Application.Features.Users.Commands.UpdateProfile.UpdateProfileCommand command)
+    {
+        return HandleResult(await Mediator.Send(command));
+    }
+
+    [Authorize(Roles = "Parent")]
+    [HttpGet("my-students")]
+    public async Task<IActionResult> GetMyStudents()
+    {
+        return HandleResult(await Mediator.Send(new VeliOgretmenIletisim.Application.Features.Parents.Queries.GetMyStudents.GetMyStudentsQuery()));
+    }
+
+    [Authorize(Roles = "Parent")]
+    [HttpPut("students")]
+    public async Task<IActionResult> UpdateStudent([FromBody] VeliOgretmenIletisim.Application.Features.Students.Commands.UpdateStudent.UpdateStudentCommand command)
+    {
+        return HandleResult(await Mediator.Send(command));
+    }
 }

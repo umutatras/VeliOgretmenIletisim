@@ -17,7 +17,7 @@ export class TeacherStudentsComponent implements OnInit {
   public readonly Math = Math;
   
   currentUser = this.authService.currentUser;
-  students = signal<TeacherStudent[]>([]);
+  students = signal<any[]>([]);
   teachers = signal<any[]>([]);
 
   newStudent: any = {
@@ -25,7 +25,8 @@ export class TeacherStudentsComponent implements OnInit {
     lastName: '',
     studentNumber: '',
     parentId: null,
-    teacherIds: []
+    teacherIds: [],
+    phoneNumber: ''
   };
 
   searchTerm = signal('');
@@ -147,7 +148,8 @@ export class TeacherStudentsComponent implements OnInit {
       lastName: '',
       studentNumber: '',
       parentId: null,
-      teacherIds: []
+      teacherIds: [],
+      phoneNumber: ''
     };
   }
 }

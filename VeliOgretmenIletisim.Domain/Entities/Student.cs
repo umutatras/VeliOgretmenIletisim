@@ -7,6 +7,7 @@ public class Student : BaseEntity, IAuditEntity, ISoftDelete
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string StudentNumber { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
 
     public Guid ParentId { get; set; }
     public Parent Parent { get; set; } = null!;

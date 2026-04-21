@@ -40,6 +40,15 @@ public class UpdateStudentCommandHandler : IRequestHandler<UpdateStudentCommand,
             if (teacher == null || !student.StudentTeachers.Any(st => st.TeacherId == teacher.Id))
                 return Result.Failure("Bu öğrenciyi güncelleme yetkiniz bulunmamaktadır.", 403);
         }
+        else if (role == "Parent")
+        {
+            var parent = await _uow.GetRepository<Parent>()
+                .Where(p => p.AppUserId == userId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (parent == null || student.ParentId != parent.Id)
+                return Result.Failure("Bu öğrenciyi güncelleme yetkiniz bulunmamaktadır.", 403);
+        }
 
         if (student.StudentNumber != request.StudentNumber)
         {
@@ -54,7 +63,12 @@ public class UpdateStudentCommandHandler : IRequestHandler<UpdateStudentCommand,
         student.FirstName = request.FirstName;
         student.LastName = request.LastName;
         student.StudentNumber = request.StudentNumber;
-        student.ParentId = request.ParentId;
+        student.PhoneNumber = request.PhoneNumber;
+        
+        if (role == "Admin")
+        {
+            student.ParentId = request.ParentId;
+        }
 
         // Sadece Admin öğretmen atamasını değiştirebilir veya ekleyebilir
         if (role == "Admin" && request.TeacherIds != null)

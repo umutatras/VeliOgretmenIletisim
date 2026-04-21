@@ -14,6 +14,7 @@ public class StudentDto
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string StudentNumber { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
     public string ParentName { get; set; } = string.Empty;
     public Guid ParentId { get; set; }
     public List<string> TeacherNames { get; set; } = new();
@@ -62,6 +63,7 @@ public class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, R
                 FirstName = s.FirstName,
                 LastName = s.LastName,
                 StudentNumber = s.StudentNumber,
+                PhoneNumber = s.PhoneNumber,
                 ParentName = s.Parent != null && s.Parent.AppUser != null 
                     ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName 
                     : "Bilinmiyor",

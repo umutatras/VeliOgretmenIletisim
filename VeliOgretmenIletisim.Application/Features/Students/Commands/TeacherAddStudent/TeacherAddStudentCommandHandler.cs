@@ -62,6 +62,7 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
             FirstName = request.FirstName,
             LastName = request.LastName,
             StudentNumber = request.StudentNumber,
+            PhoneNumber = request.PhoneNumber,
             ParentId = request.ParentId
         };
 

@@ -39,6 +39,37 @@
     <div class="col-xl-8 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
+                <h3 class="card-title">Profil Bilgilerini Güncelle</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Ad Soyad</label>
+                            <input type="text" class="form-control" *ngIf="profile()" [(ngModel)]="profile()!.fullName">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">E-posta</label>
+                            <input type="email" class="form-control" *ngIf="profile()" [(ngModel)]="profile()!.email">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="form-label">Telefon Numarası</label>
+                            <input type="text" class="form-control" *ngIf="profile()" [(ngModel)]="profile()!.phoneNumber" placeholder="05XX XXX XX XX">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-2" (click)="updateProfile()">
+                    <i class="fe fe-edit me-1"></i> Bilgileri Kaydet
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header border-bottom">
                 <h3 class="card-title">Şifre Değiştir</h3>
             </div>
             <div class="card-body">
@@ -73,6 +104,41 @@
             <div class="card-body">
                 <div class="alert alert-info py-2">
                     <i class="fe fe-check-circle me-2"></i> Hesabınız şu an aktif ve tüm yetkileriniz tanımlanmış durumda.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- My Students Section (Only for Parents) -->
+<div class="row mt-4" *ngIf="profile()?.role === 'Parent' && myStudents().length > 0">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Öğrencilerimin Bilgileri</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 col-lg-4" *ngFor="let s of myStudents()">
+                        <div class="card border shadow-none mb-4">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <h5 class="mb-1">{{ s.firstName }} {{ s.lastName }}</h5>
+                                    <span class="text-muted small">No: {{ s.studentNumber }}</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Öğrenci Telefon No</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" [(ngModel)]="s.phoneNumber" placeholder="05XX XXX XX XX">
+                                        <button class="btn btn-primary" (click)="updateStudent(s)">
+                                            <i class="fe fe-save"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">Bu bilgi sadece sizin ve öğretmenlerin görebileceği bir bilgidir.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

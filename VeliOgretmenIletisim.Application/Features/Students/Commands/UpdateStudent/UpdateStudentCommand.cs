@@ -9,6 +9,7 @@ public class UpdateStudentCommand : IRequest<Result>
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string StudentNumber { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
     public Guid ParentId { get; set; }
     public List<Guid> TeacherIds { get; set; } = new();
 }

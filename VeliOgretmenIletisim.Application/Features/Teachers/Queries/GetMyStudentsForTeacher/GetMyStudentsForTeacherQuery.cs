@@ -8,6 +8,7 @@ public record TeacherStudentDto(
     string FirstName, 
     string LastName, 
     string StudentNumber, 
+    string PhoneNumber,
     Guid ParentId, 
     string ParentName,
     List<string> TeacherNames,

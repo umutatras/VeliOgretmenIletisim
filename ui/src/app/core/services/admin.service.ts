@@ -14,6 +14,7 @@ export interface Student {
   firstName: string;
   lastName: string;
   studentNumber: string;
+  phoneNumber: string;
   parentName: string;
   parentId: string;
   teacherNames: string[];

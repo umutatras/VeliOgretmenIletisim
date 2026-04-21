@@ -28,6 +28,10 @@
                     <input type="text" class="form-control" [(ngModel)]="newStudent.studentNumber" placeholder="Numara">
                 </div>
                 <div class="form-group">
+                    <label class="form-label">Telefon Numarası</label>
+                    <input type="text" class="form-control" [(ngModel)]="newStudent.phoneNumber" placeholder="05XX XXX XX XX">
+                </div>
+                <div class="form-group">
                     <label class="form-label">Veli Seçimi</label>
                     <select class="form-control form-select" [(ngModel)]="newStudent.parentId">
                         <option value="">Veli Seçiniz...</option>
@@ -82,6 +86,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Öğrenci</th>
+                                    <th>Telefon</th>
                                     <th>Veli</th>
                                     <th>Öğretmen</th>
                                     <th class="text-center">İşlem</th>
@@ -92,6 +97,7 @@
                                     <tr>
                                         <td>{{ s.studentNumber }}</td>
                                         <td class="fw-bold">{{ s.firstName }} {{ s.lastName }}</td>
+                                        <td>{{ s.phoneNumber }}</td>
                                         <td>{{ s.parentName }}</td>
                                         <td>
                                             @if (s.teacherNames && s.teacherNames.length > 0) {

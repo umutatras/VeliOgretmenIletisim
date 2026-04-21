@@ -64,6 +64,7 @@ public class GetMyStudentsForTeacherQueryHandler : IRequestHandler<GetMyStudents
                 s.FirstName,
                 s.LastName,
                 s.StudentNumber,
+                s.PhoneNumber,
                 s.ParentId,
                 s.Parent != null && s.Parent.AppUser != null 
                     ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName 

@@ -7,6 +7,7 @@ export interface TeacherStudent {
   id: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   studentNumber: string;
   parentId: string;
   parentName: string;

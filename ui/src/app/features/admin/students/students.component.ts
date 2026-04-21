@@ -14,7 +14,7 @@ export class StudentsComponent implements OnInit {
   private adminService = inject(AdminService);
   public readonly Math = Math;
   
-  students = signal<Student[]>([]);
+  students = signal<any[]>([]);
   isLoading = signal(true);
   totalCount = signal(0);
   currentPage = signal(1);
@@ -28,7 +28,8 @@ export class StudentsComponent implements OnInit {
     lastName: '',
     studentNumber: '',
     parentId: null,
-    teacherIds: []
+    teacherIds: [],
+    phoneNumber: ''
   };
 
   parents = signal<UserBrief[]>([]);
@@ -120,7 +121,8 @@ export class StudentsComponent implements OnInit {
       lastName: '',
       studentNumber: '',
       parentId: null,
-      teacherIds: []
+      teacherIds: [],
+      phoneNumber: ''
     };
   }
 

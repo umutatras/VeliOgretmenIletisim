@@ -16,6 +16,7 @@ export class ProfileComponent implements OnInit {
   private fileService = inject(FileService);
 
   profile = signal<UserProfile | null>(null);
+  myStudents = signal<any[]>([]);
   isLoading = signal(true);
 
   // Change Password Form
@@ -34,8 +35,29 @@ export class ProfileComponent implements OnInit {
     this.userService.getProfile().subscribe(res => {
       if (res.isSuccess) {
         this.profile.set(res.data);
+        if (res.data.role === 'Parent') {
+          this.loadMyStudents();
+        }
       }
       this.isLoading.set(false);
+    });
+  }
+
+  loadMyStudents() {
+    this.userService.getMyStudentsForParent().subscribe(res => {
+      if (res.isSuccess) {
+        this.myStudents.set(res.data);
+      }
+    });
+  }
+
+  updateStudent(student: any) {
+    this.userService.updateStudent(student).subscribe(res => {
+      if (res.isSuccess) {
+        Swal.fire('Başarılı', 'Öğrenci bilgileri güncellendi.', 'success');
+      } else {
+        Swal.fire('Hata', res.message, 'error');
+      }
     });
   }
 
@@ -65,6 +87,19 @@ export class ProfileComponent implements OnInit {
       if (res.isSuccess) {
         Swal.fire('Başarılı', 'Şifreniz değiştirildi.', 'success');
         this.passwordData = { oldPassword: '', newPassword: '', confirmPassword: '' };
+      } else {
+        Swal.fire('Hata', res.message, 'error');
+      }
+    });
+  }
+
+  updateProfile() {
+    const prof = this.profile();
+    if (!prof) return;
+
+    this.userService.updateProfile(prof).subscribe(res => {
+      if (res.isSuccess) {
+        Swal.fire('Başarılı', 'Profil bilgileriniz güncellendi.', 'success');
       } else {
         Swal.fire('Hata', res.message, 'error');
       }

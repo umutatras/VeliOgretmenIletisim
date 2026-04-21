@@ -31,4 +31,16 @@ export class UserService {
   changePassword(passwordData: any): Observable<Result<any>> {
     return this.http.post<Result<any>>(`${this.apiUrl}/change-password`, passwordData);
   }
+
+  updateProfile(profile: any): Observable<Result<any>> {
+    return this.http.put<Result<any>>(`${this.apiUrl}/profile`, profile);
+  }
+
+  getMyStudentsForParent(): Observable<Result<any[]>> {
+    return this.http.get<Result<any[]>>(`${this.apiUrl}/my-students`);
+  }
+
+  updateStudent(student: any): Observable<Result<any>> {
+    return this.http.put<Result<any>>(`${this.apiUrl}/students`, student);
+  }
 }
