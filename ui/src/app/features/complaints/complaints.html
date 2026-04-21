@@ -1,0 +1,97 @@
+<div class="page-header">
+    <h1 class="page-title">Şikayet & Talep Yönetimi</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">İletişim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Talepler</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 col-lg-5 col-xl-4">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">{{ selectedComplaint() ? 'Talebi Yanıtla' : 'Yeni Talep Oluştur' }}</h3>
+            </div>
+            <div class="card-body">
+                @if (selectedComplaint()) {
+                    <div class="alert alert-info py-2">
+                        <strong>Seçili Talep:</strong> {{ selectedComplaint()?.subject }}
+                        <button class="btn btn-sm btn-link text-white ms-2" (click)="selectedComplaint.set(null)">İptal</button>
+                    </div>
+                    <div class="form-group text-dark mb-3">
+                        <p class="fs-13">{{ selectedComplaint()?.content }}</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cevabınız</label>
+                        <textarea class="form-control" rows="4" [(ngModel)]="adminResponse" placeholder="Cevabınızı buraya yazın..."></textarea>
+                    </div>
+                    <button class="btn btn-success w-100 mt-2" (click)="submitResponse()">
+                        <i class="fe fe-send me-1"></i> Cevapla
+                    </button>
+                } @else {
+                    <div class="form-group">
+                        <label class="form-label">Konu</label>
+                        <input type="text" class="form-control" [(ngModel)]="subject" placeholder="Konu başlığı...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mesaj</label>
+                        <textarea class="form-control" rows="6" [(ngModel)]="content" placeholder="Mesajınız..."></textarea>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-2" (click)="create()">
+                        <i class="fe fe-plus me-1"></i> Gönder
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-lg-7 col-xl-8">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Tüm Talepler</h3>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-nowrap border-bottom">
+                            <thead>
+                                <tr>
+                                    <th>Konu</th>
+                                    <th>Durum</th>
+                                    <th>Tarih</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of complaints(); track item.id) {
+                                    <tr>
+                                        <td>{{ item.subject }}</td>
+                                        <td>
+                                            @if (item.adminResponse) {
+                                                <span class="badge bg-success">Yanıtlandı</span>
+                                            } @else {
+                                                <span class="badge bg-warning">Beklemede</span>
+                                            }
+                                        </td>
+                                        <td>{{ item.createdDate | date:'short' }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary" (click)="selectedComplaint.set(item)">
+                                                <i class="fe fe-eye me-1"></i> Detay
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

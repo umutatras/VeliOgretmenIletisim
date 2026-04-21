@@ -1,0 +1,66 @@
+<div class="page-header">
+    <h1 class="page-title">Sistem İşlem Kayıtları</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Yönetim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Audit Logs</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Aktivite Günlüğü</h3>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                } @else {
+                    <div class="table-responsive text-nowrap">
+                        <table class="table table-bordered border-bottom">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Kullanıcı</th>
+                                    <th>İşlem</th>
+                                    <th>Hız (ms)</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (log of logs(); track log.id) {
+                                    <tr>
+                                        <td>{{ log.createdDate | date:'medium' }}</td>
+                                        <td><span class="badge bg-slate-200 text-dark">{{ log.userId || 'Sistem' }}</span></td>
+                                        <td>
+                                            <span class="fw-bold">{{ log.httpMethod }}</span> 
+                                            <span class="ms-2 text-muted">{{ log.requestPath }}</span>
+                                        </td>
+                                        <td>{{ log.executionTimeMs }}ms</td>
+                                        <td>
+                                            <span [class]="'badge ' + (log.statusCode < 300 ? 'bg-success' : 'bg-danger')">
+                                                {{ log.statusCode }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="d-flex mt-4 align-items-center">
+                        <span class="text-muted">Sayfa {{ currentPage() }} / {{ totalPages() }}</span>
+                        <div class="ms-auto btn-list">
+                            <button [disabled]="currentPage() === 1" (click)="loadLogs(currentPage() - 1)" class="btn btn-outline-primary btn-sm">Geri</button>
+                            <button [disabled]="currentPage() === totalPages()" (click)="loadLogs(currentPage() + 1)" class="btn btn-outline-primary btn-sm">İleri</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,104 @@
+<div class="page-header">
+    <h1 class="page-title">Hoş Geldiniz, {{ userName() }}</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Genel</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
+        <div class="card bg-primary img-card box-primary-shadow">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="text-white">
+                        <h2 class="mb-0 number-font">24</h2>
+                        <p class="text-white mb-0">Aktif Duyuru</p>
+                    </div>
+                    <div class="ms-auto"> <i class="fe fe-megaphone text-white fs-30 me-2 mt-2"></i> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
+        <div class="card bg-secondary img-card box-secondary-shadow">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="text-white">
+                        <h2 class="mb-0 number-font">12</h2>
+                        <p class="text-white mb-0">Yeni Randevu</p>
+                    </div>
+                    <div class="ms-auto"> <i class="fe fe-calendar text-white fs-30 me-2 mt-2"></i> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
+        <div class="card bg-success img-card box-success-shadow">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="text-white">
+                        <h2 class="mb-0 number-font">8</h2>
+                        <p class="text-white mb-0">Tamamlanan Talep</p>
+                    </div>
+                    <div class="ms-auto"> <i class="fe fe-check-circle text-white fs-30 me-2 mt-2"></i> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
+        <div class="card bg-info img-card box-info-shadow">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="text-white">
+                        <h2 class="mb-0 number-font">450</h2>
+                        <p class="text-white mb-0">Toplam Öğrenci</p>
+                    </div>
+                    <div class="ms-auto"> <i class="fe fe-users text-white fs-30 me-2 mt-2"></i> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Son Duyurular</h3>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-nowrap border-bottom" id="basic-datatable">
+                            <thead>
+                                <tr>
+                                    <th class="wd-15p border-bottom-0">Başlık</th>
+                                    <th class="wd-15p border-bottom-0">Tarih</th>
+                                    <th class="wd-20p border-bottom-0">İçerik</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of announcements(); track item.id) {
+                                    <tr>
+                                        <td class="fw-bold">{{ item.title }}</td>
+                                        <td>{{ item.createdDate | date:'shortDate' }}</td>
+                                        <td>{{ item.content | slice:0:100 }}...</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

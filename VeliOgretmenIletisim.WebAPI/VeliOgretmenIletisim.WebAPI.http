@@ -1,0 +1,6 @@
+@VeliOgretmenIletisim.WebAPI_HostAddress = http://localhost:5066
+
+GET {{VeliOgretmenIletisim.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

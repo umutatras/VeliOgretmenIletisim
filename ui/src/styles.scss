@@ -1,0 +1,35 @@
+/* Active Menu Styling for Zanex - Premium Look */
+.app-sidebar .side-menu__item.active {
+    background: linear-gradient(to right, rgba(var(--primary-rgb), 0.15), rgba(var(--primary-rgb), 0.05)) !important;
+    color: var(--primary-bg-color) !important;
+    border-left: 4px solid var(--primary-bg-color); /* Left border for better accent */
+    border-right: none;
+    font-weight: 700;
+    box-shadow: none;
+}
+
+.app-sidebar .side-menu__item.active i {
+    color: var(--primary-bg-color) !important;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+.app-sidebar .side-menu__item:hover:not(.active) {
+    background: rgba(var(--primary-rgb), 0.05) !important;
+    color: var(--primary-bg-color) !important;
+}
+
+body.dark-mode .app-sidebar .side-menu__item.active {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+}
+
+.camera-badge {
+    transition: all 0.3s ease;
+    border: 2px solid #fff;
+}
+
+.profile-img-wrapper:hover .camera-badge {
+    background: var(--primary-bg-hover) !important;
+    transform: scale(1.2);
+}

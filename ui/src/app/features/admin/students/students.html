@@ -1,0 +1,45 @@
+<div class="page-header">
+    <h1 class="page-title">Öğrenci Yönetimi</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Yönetim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Öğrenciler</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Kayıtlı Öğrenciler</h3>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-nowrap border-bottom">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Öğrenci No</th>
+                                    <th>Adı Soyadı</th>
+                                    <th>Veli Adı</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (student of students(); track student.id) {
+                                    <tr>
+                                        <td><span class="badge bg-primary-transparent text-primary fw-bold">{{ student.studentNumber }}</span></td>
+                                        <td class="fw-semibold">{{ student.firstName }} {{ student.lastName }}</td>
+                                        <td>{{ student.parentName }}</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

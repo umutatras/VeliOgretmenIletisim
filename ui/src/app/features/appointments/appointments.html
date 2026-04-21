@@ -1,0 +1,63 @@
+<div class="page-header">
+    <h1 class="page-title">Randevu Takvimi</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">İletişim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Randevular</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom d-flex align-items-center">
+                <h3 class="card-title">Randevu Kayıtları</h3>
+                <div class="ms-auto">
+                    <button class="btn btn-primary btn-sm"><i class="fe fe-calendar me-1"></i> Yeni Randevu Al</button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-nowrap border-bottom">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Öğrenci</th>
+                                    <th>Veli</th>
+                                    <th>Öğretmen</th>
+                                    <th>Tarih & Saat</th>
+                                    <th>Durum</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of appointments(); track item.id) {
+                                    <tr>
+                                        <td class="fw-bold">{{ item.studentName }}</td>
+                                        <td>{{ item.parentName }}</td>
+                                        <td>{{ item.teacherName }}</td>
+                                        <td>{{ item.appointmentDate | date:'medium' }}</td>
+                                        <td>
+                                            @switch (item.status) {
+                                                @case ('Approved') { <span class="badge bg-success">Onaylandı</span> }
+                                                @case ('Pending') { <span class="badge bg-warning">Beklemede</span> }
+                                                @case ('Cancelled') { <span class="badge bg-danger">İptal Edildi</span> }
+                                                @default { <span class="badge bg-secondary">{{ item.status }}</span> }
+                                            }
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info btn-icon"><i class="fe fe-edit"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

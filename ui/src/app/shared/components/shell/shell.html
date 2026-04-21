@@ -1,0 +1,118 @@
+<div class="page">
+  <div class="page-main">
+    <!-- app-Header -->
+    <div class="app-header header sticky">
+      <div class="container-fluid main-container">
+        <div class="d-flex align-items-center">
+          <a class="logo-horizontal " href="index.html">
+            <div class="h3 font-weight-bold text-primary mb-0">SCHOOL CONNECT</div>
+          </a>
+          <div class="d-flex order-lg-2 ms-auto header-right-icons">
+            <div class="dropdown d-md-flex profile-1">
+              <a href="javascript:void(0);" class="nav-link leading-none d-flex px-1" (click)="onProfileImageClick(profileInput)">
+                <div class="text-end me-2 d-none d-lg-block">
+                  <h5 class="text-dark mb-0 fs-14 fw-semibold">{{ userName() }}</h5>
+                  <small class="text-muted">{{ currentUser()?.role || 'Kullanıcı' }}</small>
+                </div>
+                <div class="position-relative profile-img-wrapper">
+                  <img [src]="getProfileImageUrl()" alt="profile-user" class="avatar profile-user brround cover-image shadow-sm">
+                  <span class="position-absolute bottom-0 end-0 bg-primary text-white brround p-1 camera-badge shadow-sm" style="font-size: 10px; cursor: pointer;">
+                    <i class="fe fe-camera"></i>
+                  </span>
+                </div>
+              </a>
+              <input type="file" #profileInput class="d-none" (change)="uploadProfilePicture($event)" accept="image/*">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /app-Header -->
+
+    <!--APP-SIDEBAR-->
+    <div class="sticky">
+      <aside class="app-sidebar">
+        <div class="side-header">
+          <a class="header-brand1" href="/">
+            <span class="h4 font-weight-bold text-white mb-0">PORTAL</span>
+          </a>
+        </div>
+        <div class="main-sidemenu">
+          <ul class="side-menu">
+            <li class="sub-category">
+              <h3>Genel</h3>
+            </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/dashboard" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-home"></i>
+                <span class="side-menu__label">Dashboard</span>
+              </a>
+            </li>
+            <li class="sub-category">
+              <h3>İletişim</h3>
+            </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/announcements" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-megaphone"></i>
+                <span class="side-menu__label">Duyurular</span>
+              </a>
+            </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/complaints" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-mail"></i>
+                <span class="side-menu__label">Şikayet & Talep</span>
+              </a>
+            </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/meeting-notes" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-file-text"></i>
+                <span class="side-menu__label">Görüşme Notları</span>
+              </a>
+            </li>
+            <li class="sub-category">
+              <h3>Yönetim</h3>
+            </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/admin/departments" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-layers"></i>
+                <span class="side-menu__label">Departmanlar</span>
+              </a>
+            </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/admin/students" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-users"></i>
+                <span class="side-menu__label">Öğrenciler</span>
+              </a>
+            </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/admin/audit-logs" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-database"></i>
+                <span class="side-menu__label">Sistem Logları</span>
+              </a>
+            </li>
+            <li class="sub-category">
+              <h3>Hesap</h3>
+            </li>
+            <li>
+              <a class="side-menu__item" (click)="logout()" style="cursor: pointer;">
+                <i class="side-menu__icon fe fe-log-out"></i>
+                <span class="side-menu__label">Güvenli Çıkış</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+    <!--/APP-SIDEBAR-->
+
+    <!--app-content open-->
+    <div class="main-content app-content mt-0">
+      <div class="side-app">
+        <!-- CONTAINER -->
+        <div class="main-container container-fluid">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

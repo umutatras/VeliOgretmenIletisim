@@ -1,0 +1,71 @@
+<div class="page-header">
+    <h1 class="page-title">Görüşme Notları</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">İletişim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Görüşmeler</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 col-xl-4">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Yeni Görüşme Notu</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Başlık</label>
+                    <input type="text" class="form-control" [(ngModel)]="title" placeholder="Görüşme konusu...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İçerik</label>
+                    <textarea class="form-control" rows="6" [(ngModel)]="content" placeholder="Görüşme detayları..."></textarea>
+                </div>
+                <button class="btn btn-success w-100 mt-3" (click)="create()">
+                    <i class="fe fe-save me-1"></i> Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-12 col-xl-8">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Görüşme Geçmişi</h3>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                } @else {
+                    <div class="row">
+                        @for (item of notes(); track item.id) {
+                            <div class="col-md-12 col-lg-6">
+                                <div class="card border p-0 shadow-none">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="avatar avatar-md brround bg-info-transparent text-info me-3">
+                                                <i class="fe fe-file-text"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-bold">{{ item.title }}</h6>
+                                                <small class="text-muted">{{ item.createdDate | date:'medium' }}</small>
+                                            </div>
+                                        </div>
+                                        <p class="text-dark fs-13 mb-0">{{ item.content }}</p>
+                                    </div>
+                                    <div class="card-footer border-top-0 pt-0 text-end">
+                                        <button (click)="delete(item.id)" class="btn btn-sm btn-link text-danger p-0">
+                                            <i class="fe fe-trash-2 me-1"></i> Sil
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+<div class="page-header">
+    <h1 class="page-title">Duyuru Yönetimi</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Genel</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Duyurular</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 col-xl-4">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Yeni Duyuru Oluştur</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Başlık</label>
+                    <input type="text" class="form-control" [(ngModel)]="title" placeholder="Duyuru başlığını giriniz...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İçerik</label>
+                    <textarea class="form-control" rows="5" [(ngModel)]="content" placeholder="Duyuru içeriğini giriniz..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dosya Eki (Opsiyonel)</label>
+                    <input type="file" class="form-control" (change)="onFileChange($event)">
+                    @if (isUploading()) {
+                        <small class="text-primary mt-1 d-block">Dosya yükleniyor...</small>
+                    }
+                </div>
+                <div class="mt-4">
+                    <button class="btn btn-primary w-100" (click)="create()">
+                        <i class="fe fe-plus me-2"></i> Yayınla
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-12 col-xl-8">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Yayınlanmış Duyurular</h3>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-nowrap border-bottom">
+                            <thead>
+                                <tr>
+                                    <th>Başlık</th>
+                                    <th>Tarih</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of announcements(); track item.id) {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">{{ item.title }}</h6>
+                                                    <p class="text-muted mb-0 fs-12">{{ item.content | slice:0:50 }}...</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ item.createdDate | date:'short' }}</td>
+                                        <td>
+                                            <div class="btn-list">
+                                                @if (item.attachmentPath) {
+                                                    <a [href]="'http://localhost:5066' + item.attachmentPath" target="_blank" class="btn btn-sm btn-icon btn-info">
+                                                        <i class="fe fe-download"></i>
+                                                    </a>
+                                                }
+                                                <button (click)="delete(item.id)" class="btn btn-sm btn-icon btn-danger">
+                                                    <i class="fe fe-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

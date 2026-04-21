@@ -1,0 +1,62 @@
+<div class="page-header">
+    <h1 class="page-title">Departman Yönetimi</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Yönetim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Departmanlar</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 col-xl-4">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Yeni Departman</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Adı</label>
+                    <input type="text" class="form-control" [(ngModel)]="newDeptName" placeholder="örn: Matematik Bölümü">
+                </div>
+                <button class="btn btn-primary w-100 mt-3" (click)="createDepartment()">Ekle</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-12 col-xl-8">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Kayıtlı Departmanlar</h3>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-nowrap border-bottom">
+                            <thead>
+                                <tr>
+                                    <th>Bölüm Adı</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (dept of departments(); track dept.id) {
+                                    <tr>
+                                        <td class="fw-bold">{{ dept.name }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-icon btn-danger" (click)="deleteDepartment(dept.id)">
+                                                <i class="fe fe-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
