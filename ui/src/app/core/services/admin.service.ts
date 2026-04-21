@@ -15,7 +15,9 @@ export interface Student {
   lastName: string;
   studentNumber: string;
   parentName: string;
-  teacherName?: string;
+  parentId: string;
+  teacherNames: string[];
+  teacherIds: string[];
 }
 
 export interface AuditLog {

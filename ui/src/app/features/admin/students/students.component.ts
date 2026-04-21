@@ -20,6 +20,7 @@ export class StudentsComponent implements OnInit {
   currentPage = signal(1);
   totalPages = signal(1);
   searchTerm = signal('');
+  isSubmitting = signal(false);
 
   // Form Data
   newStudent: any = {
@@ -27,7 +28,7 @@ export class StudentsComponent implements OnInit {
     lastName: '',
     studentNumber: '',
     parentId: null,
-    teacherId: null
+    teacherIds: []
   };
 
   parents = signal<UserBrief[]>([]);
@@ -76,7 +77,7 @@ export class StudentsComponent implements OnInit {
     this.newStudent = {
       ...s,
       parentId: s.parentId || null,
-      teacherId: s.teacherId || null
+      teacherIds: s.teacherIds || []
     };
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -91,8 +92,10 @@ export class StudentsComponent implements OnInit {
       ? this.adminService.updateStudent(this.newStudent)
       : this.adminService.createStudent(this.newStudent);
 
+    this.isSubmitting.set(true);
     request.subscribe({
       next: (res) => {
+        this.isSubmitting.set(false);
         if (res.isSuccess) {
           Swal.fire('Başarılı', this.isEditing() ? 'Öğrenci güncellendi.' : 'Öğrenci eklendi.', 'success');
           this.resetForm();
@@ -104,6 +107,7 @@ export class StudentsComponent implements OnInit {
         }
       },
       error: (err) => {
+        this.isSubmitting.set(false);
         Swal.fire('Hata', err.error?.message || 'Bir hata oluştu.', 'error');
       }
     });
@@ -116,7 +120,7 @@ export class StudentsComponent implements OnInit {
       lastName: '',
       studentNumber: '',
       parentId: null,
-      teacherId: null
+      teacherIds: []
     };
   }
 

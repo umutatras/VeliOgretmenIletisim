@@ -3,7 +3,16 @@ using VeliOgretmenIletisim.Application.Common.Models;
 
 namespace VeliOgretmenIletisim.Application.Features.Teachers.Queries.GetMyStudentsForTeacher;
 
-public record TeacherStudentDto(Guid Id, string FirstName, string LastName, string StudentNumber, Guid ParentId, string ParentName);
+public record TeacherStudentDto(
+    Guid Id, 
+    string FirstName, 
+    string LastName, 
+    string StudentNumber, 
+    Guid ParentId, 
+    string ParentName,
+    List<string> TeacherNames,
+    List<Guid> TeacherIds
+);
 
 public class GetMyStudentsForTeacherQuery : IRequest<Result<PagedResult<TeacherStudentDto>>>
 {

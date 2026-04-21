@@ -10,5 +10,5 @@ public class UpdateStudentCommand : IRequest<Result>
     public string LastName { get; set; } = string.Empty;
     public string StudentNumber { get; set; } = string.Empty;
     public Guid ParentId { get; set; }
-    public Guid? TeacherId { get; set; } // Admin can update this, Teacher cannot (or it's restricted)
+    public List<Guid> TeacherIds { get; set; } = new();
 }

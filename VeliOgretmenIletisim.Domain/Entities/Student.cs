@@ -11,8 +11,7 @@ public class Student : BaseEntity, IAuditEntity, ISoftDelete
     public Guid ParentId { get; set; }
     public Parent Parent { get; set; } = null!;
 
-    public Guid? TeacherId { get; set; }
-    public Teacher? Teacher { get; set; }
+    public ICollection<StudentTeacher> StudentTeachers { get; set; } = new List<StudentTeacher>();
 
     // IAuditEntity
     public DateTime CreatedDate { get; set; }

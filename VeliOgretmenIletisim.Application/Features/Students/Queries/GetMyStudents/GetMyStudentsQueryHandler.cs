@@ -26,8 +26,9 @@ public class GetMyStudentsQueryHandler : IRequestHandler<GetMyStudentsQuery, Res
         var parent = await _uow.GetRepository<Parent>()
             .GetAll()
             .Include(p => p.Children)
-            .ThenInclude(c => c.Teacher)
-            .ThenInclude(t => t.AppUser)
+                .ThenInclude(c => c.StudentTeachers)
+                    .ThenInclude(st => st.Teacher)
+                        .ThenInclude(t => t.AppUser)
             .FirstOrDefaultAsync(p => p.AppUserId == userId, cancellationToken);
 
         if (parent == null)
@@ -37,8 +38,9 @@ public class GetMyStudentsQueryHandler : IRequestHandler<GetMyStudentsQuery, Res
             c.Id,
             $"{c.FirstName} {c.LastName}",
             c.StudentNumber,
-            c.TeacherId,
-            c.Teacher != null ? $"{c.Teacher.AppUser.FirstName} {c.Teacher.AppUser.LastName}" : "Atanmamış"
+            c.StudentTeachers
+                .Select(st => st.Teacher.AppUser.FirstName + " " + st.Teacher.AppUser.LastName)
+                .ToList()
         )).ToList();
 
         return Result<List<MyStudentDto>>.Success(children);

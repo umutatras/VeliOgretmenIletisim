@@ -20,13 +20,16 @@ public class DeleteStudentCommandHandler : IRequestHandler<DeleteStudentCommand,
 
     public async Task<Result> Handle(DeleteStudentCommand request, CancellationToken cancellationToken)
     {
-        var student = await _uow.GetRepository<Student>().GetByIdAsync(request.Id);
+        var student = await _uow.GetRepository<Student>()
+            .GetAll()
+            .Include(s => s.StudentTeachers)
+            .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
         if (student == null)
             return Result.Failure("Öğrenci bulunamadı.", 404);
 
         var userId = _currentUserService.UserId;
-        // Yetki Kontrolü: Admin her şeyi silebilir, öğretmen sadece kendi öğrencisini silebilir
+        // Yetki Kontrolü: Admin her şeyi silebilir, öğretmen sadece kendine bağlı öğrenciyi silebilir
         var isAdmin = _currentUserService.Role == "Admin";
         
         if (!isAdmin)
@@ -35,7 +38,7 @@ public class DeleteStudentCommandHandler : IRequestHandler<DeleteStudentCommand,
                 .Where(t => t.AppUserId == userId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (teacher == null || student.TeacherId != teacher.Id)
+            if (teacher == null || !student.StudentTeachers.Any(st => st.TeacherId == teacher.Id))
                 return Result.Failure("Bu öğrenciyi silme yetkiniz bulunmamaktadır.", 403);
         }
 

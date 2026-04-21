@@ -29,7 +29,7 @@ public class CreateMeetingNoteCommandHandler : IRequestHandler<CreateMeetingNote
         // İş Kuralı: Öğretmen sadece kendi öğrencisinin velisine not yazabilir mi?
         // Velinin bu öğretmenin öğrencisine sahip olduğunu kontrol et
         var isLinkExists = await _uow.GetRepository<Student>()
-            .Where(s => s.TeacherId == teacher.Id && s.ParentId == request.ParentId)
+            .Where(s => s.StudentTeachers.Any(st => st.TeacherId == teacher.Id) && s.ParentId == request.ParentId)
             .AnyAsync(cancellationToken);
 
         if (!isLinkExists)

@@ -9,5 +9,5 @@ public class AdminAddStudentCommand : IRequest<Result<Guid>>
     public string LastName { get; set; }
     public string StudentNumber { get; set; }
     public Guid ParentId { get; set; }
-    public Guid? TeacherId { get; set; }
+    public List<Guid> TeacherIds { get; set; } = new();
 }

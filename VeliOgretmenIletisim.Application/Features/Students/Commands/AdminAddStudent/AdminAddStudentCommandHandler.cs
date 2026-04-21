@@ -35,27 +35,32 @@ public class AdminAddStudentCommandHandler : IRequestHandler<AdminAddStudentComm
         if (parent == null)
             return Result<Guid>.Failure("Veli bulunamadı.");
 
-        if (request.TeacherId.HasValue)
-        {
-            var teacher = await _uow.GetRepository<Teacher>().GetByIdAsync(request.TeacherId.Value);
-            if (teacher == null) return Result<Guid>.Failure("Öğretmen bulunamadı.");
-        }
-
         var student = new Student
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
             StudentNumber = request.StudentNumber,
-            ParentId = request.ParentId,
-            TeacherId = request.TeacherId
+            ParentId = request.ParentId
         };
+
+        if (request.TeacherIds != null && request.TeacherIds.Any())
+        {
+            foreach (var tId in request.TeacherIds.Distinct())
+            {
+                student.StudentTeachers.Add(new StudentTeacher 
+                { 
+                    TeacherId = tId,
+                    IsPrimary = tId == request.TeacherIds.First() 
+                });
+            }
+        }
 
         await _uow.GetRepository<Student>().AddAsync(student);
         await _uow.SaveChangesAsync(cancellationToken);
 
         // Real-time notification to Parent
         await _notificationService.SendToUserAsync(parent.AppUserId, 
-            $"{student.FirstName} {student.LastName} has been linked to your account.", "StudentAdded");
+            $"{student.FirstName} {student.LastName} isimli öğrenci hesabınızla ilişkilendirildi.", "StudentAdded");
 
         return Result<Guid>.Success(student.Id, "Student registered and linked successfully.");
     }

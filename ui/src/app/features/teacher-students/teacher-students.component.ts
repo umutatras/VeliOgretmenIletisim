@@ -25,7 +25,7 @@ export class TeacherStudentsComponent implements OnInit {
     lastName: '',
     studentNumber: '',
     parentId: null,
-    teacherId: null
+    teacherIds: []
   };
 
   searchTerm = signal('');
@@ -35,6 +35,7 @@ export class TeacherStudentsComponent implements OnInit {
   isLoading = signal(false);
   isEditing = signal(false);
   parents = signal<any[]>([]);
+  isSubmitting = signal(false);
 
   ngOnInit() {
     this.loadStudents();
@@ -79,7 +80,10 @@ export class TeacherStudentsComponent implements OnInit {
 
   editStudent(s: any) {
     this.isEditing.set(true);
-    this.newStudent = { ...s };
+    this.newStudent = { 
+      ...s,
+      teacherIds: s.teacherIds || []
+    };
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -93,8 +97,10 @@ export class TeacherStudentsComponent implements OnInit {
       ? this.teacherService.updateStudent(this.newStudent)
       : this.teacherService.addStudent(this.newStudent);
 
+    this.isSubmitting.set(true);
     request.subscribe({
       next: (res) => {
+        this.isSubmitting.set(false);
         if (res.isSuccess) {
           Swal.fire('Başarılı', this.isEditing() ? 'Öğrenci güncellendi.' : 'Öğrenci eklendi.', 'success');
           this.resetForm();
@@ -106,6 +112,7 @@ export class TeacherStudentsComponent implements OnInit {
         }
       },
       error: (err) => {
+        this.isSubmitting.set(false);
         Swal.fire('Hata', err.error?.message || 'Bir hata oluştu.', 'error');
       }
     });
@@ -140,7 +147,7 @@ export class TeacherStudentsComponent implements OnInit {
       lastName: '',
       studentNumber: '',
       parentId: null,
-      teacherId: null
+      teacherIds: []
     };
   }
 }

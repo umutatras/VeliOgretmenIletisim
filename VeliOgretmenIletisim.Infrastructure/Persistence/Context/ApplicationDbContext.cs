@@ -22,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
     public DbSet<Teacher> Teachers => Set<Teacher>();
     public DbSet<Parent> Parents => Set<Parent>();
     public DbSet<Student> Students => Set<Student>();
+    public DbSet<StudentTeacher> StudentTeachers => Set<StudentTeacher>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Availability> Availabilities => Set<Availability>();
@@ -56,9 +57,15 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
 
         foreach (var entry in ChangeTracker.Entries())
         {
-            // Soft Delete Logic
+            // Soft Delete Logic (Junction table'ı hariç tutuyoruz çünkü M-N güncellemede sorun çıkarıyor)
             if (entry.State == EntityState.Deleted && entry.Entity is ISoftDelete softDelete)
             {
+                if (entry.Entity is StudentTeacher)
+                {
+                    // StudentTeacher kayıtlarını gerçekten silsin (Hard Delete)
+                    continue;
+                }
+
                 entry.State = EntityState.Modified;
                 softDelete.IsDeleted = true;
             }

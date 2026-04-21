@@ -147,9 +147,22 @@ public static class ApplicationDbContextSeed
                         FirstName = GetRandomName(),
                         LastName = GetRandomSurname(),
                         StudentNumber = (1000 + i).ToString(),
-                        ParentId = parentIds[rnd.Next(parentIds.Count)],
-                        TeacherId = teacherIds[rnd.Next(teacherIds.Count)]
+                        ParentId = parentIds[rnd.Next(parentIds.Count)]
                     };
+                    
+                    var randomTeacherId = teacherIds[rnd.Next(teacherIds.Count)];
+                    student.StudentTeachers.Add(new StudentTeacher { TeacherId = randomTeacherId, IsPrimary = true });
+                    
+                    // Rastgele ikinci bir öğretmen daha ekleyelim her ikinci öğrenciye
+                    if (i % 2 == 0)
+                    {
+                        var secondTeacherId = teacherIds[rnd.Next(teacherIds.Count)];
+                        if (secondTeacherId != randomTeacherId)
+                        {
+                            student.StudentTeachers.Add(new StudentTeacher { TeacherId = secondTeacherId, IsPrimary = false });
+                        }
+                    }
+
                     context.Students.Add(student);
                 }
                 await context.SaveChangesAsync();

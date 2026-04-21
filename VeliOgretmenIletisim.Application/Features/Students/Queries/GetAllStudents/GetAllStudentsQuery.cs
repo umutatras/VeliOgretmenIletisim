@@ -16,8 +16,8 @@ public class StudentDto
     public string StudentNumber { get; set; } = string.Empty;
     public string ParentName { get; set; } = string.Empty;
     public Guid ParentId { get; set; }
-    public string? TeacherName { get; set; }
-    public Guid? TeacherId { get; set; }
+    public List<string> TeacherNames { get; set; } = new();
+    public List<Guid> TeacherIds { get; set; } = new();
 }
 
 public class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, Result<PagedResult<StudentDto>>>
@@ -35,9 +35,10 @@ public class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, R
             .GetAll()
             .AsNoTracking()
             .Include(s => s.Parent)
-            .ThenInclude(p => p.AppUser)
-            .Include(s => s.Teacher)
-            .ThenInclude(t => t.AppUser)
+                .ThenInclude(p => p.AppUser)
+            .Include(s => s.StudentTeachers)
+                .ThenInclude(st => st.Teacher)
+                    .ThenInclude(t => t.AppUser)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
@@ -65,10 +66,12 @@ public class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, R
                     ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName 
                     : "Bilinmiyor",
                 ParentId = s.ParentId,
-                TeacherName = s.Teacher != null && s.Teacher.AppUser != null 
-                    ? s.Teacher.AppUser.FirstName + " " + s.Teacher.AppUser.LastName 
-                    : null,
-                TeacherId = s.TeacherId
+                TeacherNames = s.StudentTeachers
+                    .Select(st => st.Teacher != null && st.Teacher.AppUser != null 
+                        ? st.Teacher.AppUser.FirstName + " " + st.Teacher.AppUser.LastName 
+                        : "Bilinmiyor")
+                    .ToList(),
+                TeacherIds = s.StudentTeachers.Select(st => st.TeacherId).ToList()
             })
             .ToListAsync(cancellationToken);
 

@@ -11,7 +11,7 @@ public class Teacher : BaseEntity, IAuditEntity, ISoftDelete
     public Guid? DepartmentId { get; set; }
     public Department? Department { get; set; }
 
-    public ICollection<Student> Students { get; set; } = new List<Student>();
+    public ICollection<StudentTeacher> StudentTeachers { get; set; } = new List<StudentTeacher>();
     public ICollection<Availability> Availabilities { get; set; } = new List<Availability>();
     public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 

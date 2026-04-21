@@ -39,18 +39,21 @@
 
                 @if (currentUser()?.role === 'Admin') {
                     <div class="form-group">
-                        <label class="form-label">Öğretmen Seçimi</label>
-                        <select class="form-control form-select" [(ngModel)]="newStudent.teacherId">
-                            <option [ngValue]="null">Atanmamış (Öğretmen Seçilmedi)</option>
+                        <label class="form-label">Öğretmen Seçimi (Çoklu Seçilebilir)</label>
+                        <select class="form-control" multiple [(ngModel)]="newStudent.teacherIds" style="height: 120px;">
                             <option *ngFor="let t of teachers()" [value]="t.id">{{ t.fullName }}</option>
                         </select>
-                        <small class="text-muted">Admin iseniz mutlaka bir öğretmen seçiniz.</small>
+                        <small class="text-muted">Ctrl tuşuna basılı tutarak birden fazla seçim yapabilirsiniz.</small>
                     </div>
                 }
 
                 <div class="d-flex gap-2 mt-4">
-                    <button class="btn btn-primary flex-fill" (click)="saveStudent()">
-                        <i class="fe fe-save me-1"></i> {{ isEditing() ? 'Güncelle' : 'Öğrenciyi Kaydet' }}
+                    <button class="btn btn-primary flex-fill" (click)="saveStudent()" [disabled]="isSubmitting()">
+                        @if (isSubmitting()) {
+                            <span class="spinner-border spinner-border-sm me-1"></span> İşleniyor...
+                        } @else {
+                            <i class="fe fe-save me-1"></i> {{ isEditing() ? 'Güncelle' : 'Öğrenciyi Kaydet' }}
+                        }
                     </button>
                     <button *ngIf="isEditing()" class="btn btn-light" (click)="resetForm()">İptal</button>
                 </div>
@@ -85,6 +88,7 @@
                                     <th>No</th>
                                     <th>Öğrenci</th>
                                     <th>Veli</th>
+                                    <th>Tüm Öğretmenler</th>
                                     <th class="text-center">İşlem</th>
                                 </tr>
                             </thead>
@@ -94,6 +98,13 @@
                                         <td>{{ s.studentNumber }}</td>
                                         <td class="fw-bold">{{ s.firstName }} {{ s.lastName }}</td>
                                         <td>{{ s.parentName }}</td>
+                                        <td>
+                                            @if (s.teacherNames && s.teacherNames.length > 0) {
+                                                <span class="text-muted small">{{ s.teacherNames?.join(', ') }}</span>
+                                            } @else {
+                                                <span class="badge bg-danger-transparent text-danger">Atanmamış</span>
+                                            }
+                                        </td>
                                         <td class="text-center">
                                             <button (click)="editStudent(s)" class="btn btn-sm btn-outline-primary btn-icon me-2">
                                                 <i class="fe fe-edit"></i>
@@ -106,7 +117,7 @@
                                 }
                                 @if (students().length === 0) {
                                     <tr>
-                                        <td colspan="4" class="text-center p-5 text-muted">Henüz öğrenci eklenmemiş veya arama kriterine uygun sonuç bulunamadı.</td>
+                                        <td colspan="5" class="text-center p-5 text-muted">Henüz öğrenci eklenmemiş veya arama kriterine uygun sonuç bulunamadı.</td>
                                     </tr>
                                 }
                             </tbody>

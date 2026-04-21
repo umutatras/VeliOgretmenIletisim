@@ -10,6 +10,8 @@ export interface TeacherStudent {
   studentNumber: string;
   parentId: string;
   parentName: string;
+  teacherNames: string[];
+  teacherIds: string[];
 }
 
 @Injectable({

@@ -23,11 +23,11 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
 
     public async Task<Result<Guid>> Handle(TeacherAddStudentCommand request, CancellationToken cancellationToken)
     {
-        Guid? teacherId = null;
+        var finalTeacherIds = new List<Guid>();
 
-        if (request.TeacherId.HasValue && request.TeacherId != Guid.Empty)
+        if (request.TeacherIds != null && request.TeacherIds.Any())
         {
-            teacherId = request.TeacherId.Value;
+            finalTeacherIds.AddRange(request.TeacherIds);
         }
         else if (_currentUserService.Role != "Admin")
         {
@@ -39,7 +39,7 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
             if (teacher == null)
                 return Result<Guid>.Failure("Giriş yapan kullanıcının öğretmen profili bulunamadı.");
             
-            teacherId = teacher.Id;
+            finalTeacherIds.Add(teacher.Id);
         }
 
         var existingStudent = await _uow.GetRepository<Student>()
@@ -62,22 +62,35 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
             FirstName = request.FirstName,
             LastName = request.LastName,
             StudentNumber = request.StudentNumber,
-            ParentId = request.ParentId,
-            TeacherId = teacherId
+            ParentId = request.ParentId
         };
+
+        // Add Teacher assignments
+        foreach (var tId in finalTeacherIds.Distinct())
+        {
+            student.StudentTeachers.Add(new StudentTeacher 
+            { 
+                TeacherId = tId,
+                IsPrimary = tId == finalTeacherIds.First() // İlk seçilen ana öğretmen olsun
+            });
+        }
 
         await _uow.GetRepository<Student>().AddAsync(student);
         await _uow.SaveChangesAsync(cancellationToken);
 
         // Real-time notification to Parent
-        if (parent.AppUser != null)
+        if (parent.AppUser != null && finalTeacherIds.Any())
         {
+            var firstTeacherId = finalTeacherIds.First();
             var teacher = await _uow.GetRepository<Teacher>().GetAll()
                 .Include(t => t.AppUser)
-                .FirstOrDefaultAsync(t => t.Id == teacherId, cancellationToken);
+                .FirstOrDefaultAsync(t => t.Id == firstTeacherId, cancellationToken);
 
-            await _notificationService.SendToUserAsync(parent.AppUserId, 
-                $"{student.FirstName} {student.LastName} isimli öğrenci {teacher?.AppUser?.FirstName} {teacher?.AppUser?.LastName} öğretmeni ile ilişkilendirildi.", "StudentAdded");
+            var message = $"{student.FirstName} {student.LastName} isimli öğrenci sisteme kaydedildi.";
+            if (teacher != null)
+                message += $" (Danışman: {teacher.AppUser.FirstName} {teacher.AppUser.LastName})";
+
+            await _notificationService.SendToUserAsync(parent.AppUserId, message, "StudentAdded");
         }
 
         return Result<Guid>.Success(student.Id, "Öğrenci başarıyla kaydedildi.");

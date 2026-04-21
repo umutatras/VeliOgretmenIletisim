@@ -26,7 +26,10 @@ public class GetMyStudentsForTeacherQueryHandler : IRequestHandler<GetMyStudents
             .GetAll()
             .AsNoTracking()
             .Include(s => s.Parent)
-            .ThenInclude(p => p.AppUser)
+                .ThenInclude(p => p.AppUser)
+            .Include(s => s.StudentTeachers)
+                .ThenInclude(st => st.Teacher)
+                    .ThenInclude(t => t.AppUser)
             .AsQueryable();
 
         if (_currentUserService.Role != "Admin")
@@ -38,7 +41,7 @@ public class GetMyStudentsForTeacherQueryHandler : IRequestHandler<GetMyStudents
             if (teacher == null)
                 return Result<PagedResult<TeacherStudentDto>>.Failure("Öğretmen profili bulunamadı.");
 
-            studentsQuery = studentsQuery.Where(s => s.TeacherId == teacher.Id);
+            studentsQuery = studentsQuery.Where(s => s.StudentTeachers.Any(st => st.TeacherId == teacher.Id));
         }
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
@@ -64,7 +67,13 @@ public class GetMyStudentsForTeacherQueryHandler : IRequestHandler<GetMyStudents
                 s.ParentId,
                 s.Parent != null && s.Parent.AppUser != null 
                     ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName 
-                    : "Bilinmiyor"
+                    : "Bilinmiyor",
+                s.StudentTeachers
+                    .Select(st => st.Teacher != null && st.Teacher.AppUser != null 
+                        ? st.Teacher.AppUser.FirstName + " " + st.Teacher.AppUser.LastName 
+                        : "Bilinmiyor")
+                    .ToList(),
+                s.StudentTeachers.Select(st => st.TeacherId).ToList()
             ))
             .ToListAsync(cancellationToken);
 

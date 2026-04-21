@@ -42,7 +42,8 @@ public class GetMyTeachersQueryHandler : IRequestHandler<GetMyTeachersQuery, Res
         // 2. Velinin çocuklarının öğretmenlerini Select Projection ile çek (Performans: AsNoTracking + Select)
         var teachers = await _uow.GetRepository<Student>()
             .Where(s => s.ParentId == parent.Id)
-            .Select(s => s.Teacher)
+            .SelectMany(s => s.StudentTeachers)
+            .Select(st => st.Teacher)
             .Distinct()
             .Select(t => new TeacherDto
             {
