@@ -53,7 +53,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var currentUserId = _currentUserService.UserId?.ToString() ?? "System";
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
 
         foreach (var entry in ChangeTracker.Entries())
         {

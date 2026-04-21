@@ -62,7 +62,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
                 IsSuccess = isSuccess,
                 ErrorMessage = errorMessage,
                 StatusCode = context?.Response.StatusCode ?? 0,
-                CreatedDate = DateTime.UtcNow,
+                CreatedDate = DateTime.Now,
                 CreatedBy = _currentUserService.UserId?.ToString() ?? "System"
             };
 
