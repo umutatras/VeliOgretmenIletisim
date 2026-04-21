@@ -64,6 +64,12 @@
                 <span class="side-menu__label">Duyurular</span>
               </a>
             </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/appointments" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-calendar"></i>
+                <span class="side-menu__label">Randevular</span>
+              </a>
+            </li>
 
             <!-- Complaints: Hidden for Teachers (unless they handle it, but usually for Parents/Students) -->
             @if (currentUser()?.role === 'Admin' || currentUser()?.role === 'Parent') {

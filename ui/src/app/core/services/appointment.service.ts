@@ -68,4 +68,21 @@ export class AppointmentService {
   createAppointment(command: any): Observable<Result<any>> {
     return this.http.post<Result<any>>(`${this.apiUrl}/Appointments`, command);
   }
+
+  // New Methods for Parent/Teacher Flow
+  getAvailabilitiesForParent(): Observable<Result<any[]>> {
+    return this.http.get<Result<any[]>>(`${this.apiUrl}/Appointments/availabilities-for-parent`);
+  }
+
+  applyForAppointment(command: any): Observable<Result<any>> {
+    return this.http.post<Result<any>>(`${this.apiUrl}/Appointments/apply`, command);
+  }
+
+  getTeacherAppointments(): Observable<Result<any[]>> {
+    return this.http.get<Result<any[]>>(`${this.apiUrl}/Appointments/teacher-requests`);
+  }
+
+  updateAppointmentStatus(command: any): Observable<Result<any>> {
+    return this.http.put<Result<any>>(`${this.apiUrl}/Appointments/status`, command);
+  }
 }

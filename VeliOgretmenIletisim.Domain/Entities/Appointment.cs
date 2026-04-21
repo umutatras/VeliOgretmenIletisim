@@ -8,6 +8,9 @@ public class Appointment : BaseEntity, IAuditEntity, ISoftDelete
     public Guid AvailabilityId { get; set; }
     public Availability Availability { get; set; } = null!;
 
+    public Guid TeacherId { get; set; }
+    public Teacher Teacher { get; set; } = null!;
+
     public Guid ParentId { get; set; }
     public Parent Parent { get; set; } = null!;
 
