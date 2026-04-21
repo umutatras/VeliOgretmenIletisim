@@ -1,27 +1,33 @@
-/* Active Menu Styling for Zanex - Premium Look */
+/* Active Menu Styling for Zanex - High Visibility & Premium Look */
 .app-sidebar .side-menu__item.active {
-    background: linear-gradient(to right, rgba(var(--primary-rgb), 0.15), rgba(var(--primary-rgb), 0.05)) !important;
-    color: var(--primary-bg-color) !important;
-    border-left: 4px solid var(--primary-bg-color); /* Left border for better accent */
-    border-right: none;
-    font-weight: 700;
-    box-shadow: none;
+    background: var(--primary-bg-color) !important; /* Solid primary background */
+    color: #fff !important; /* White text for maximum contrast */
+    border-radius: 4px;
+    margin: 4px 10px;
+    padding: 10px 15px;
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+    transition: all 0.3s ease;
+}
+
+.app-sidebar .side-menu__item.active i, 
+.app-sidebar .side-menu__item.active .side-menu__label {
+    color: #fff !important;
+    font-weight: 600;
 }
 
 .app-sidebar .side-menu__item.active i {
-    color: var(--primary-bg-color) !important;
-    transform: scale(1.1);
-    transition: transform 0.3s ease;
+    transform: scale(1.15);
 }
 
 .app-sidebar .side-menu__item:hover:not(.active) {
-    background: rgba(var(--primary-rgb), 0.05) !important;
+    background: rgba(var(--primary-rgb), 0.1) !important;
     color: var(--primary-bg-color) !important;
 }
 
 body.dark-mode .app-sidebar .side-menu__item.active {
-    background: rgba(255, 255, 255, 0.05) !important;
+    background: var(--primary-bg-color) !important;
     color: #fff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .camera-badge {

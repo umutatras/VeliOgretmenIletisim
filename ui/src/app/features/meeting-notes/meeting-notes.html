@@ -16,15 +16,20 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label class="form-label">Başlık</label>
-                    <input type="text" class="form-control" [(ngModel)]="title" placeholder="Görüşme konusu...">
+                    <label class="form-label">Öğrenci / Veli Seçin</label>
+                    <select class="form-control" [(ngModel)]="selectedParentId">
+                        <option value="">Veli Seçiniz...</option>
+                        @for (s of students(); track s.studentId) {
+                            <option [value]="s.parentId">{{ s.studentName }} - ({{ s.parentName }})</option>
+                        }
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">İçerik</label>
-                    <textarea class="form-control" rows="6" [(ngModel)]="content" placeholder="Görüşme detayları..."></textarea>
+                    <label class="form-label">Görüşme Notu</label>
+                    <textarea class="form-control" rows="6" [(ngModel)]="note" placeholder="Görüşme detayları..."></textarea>
                 </div>
-                <button class="btn btn-success w-100 mt-3" (click)="create()">
-                    <i class="fe fe-save me-1"></i> Kaydet
+                <button class="btn btn-primary w-100 mt-3" (click)="create()">
+                    <i class="fe fe-send me-1"></i> Notu Paylaş
                 </button>
             </div>
         </div>
@@ -49,11 +54,11 @@
                                                 <i class="fe fe-file-text"></i>
                                             </div>
                                             <div>
-                                                <h6 class="mb-0 fw-bold">{{ item.title }}</h6>
+                                                <h6 class="mb-0 fw-bold">Veli: {{ item.parentName }}</h6>
                                                 <small class="text-muted">{{ item.createdDate | date:'medium' }}</small>
                                             </div>
                                         </div>
-                                        <p class="text-dark fs-13 mb-0">{{ item.content }}</p>
+                                        <p class="text-dark fs-13 mb-0">{{ item.note }}</p>
                                     </div>
                                     <div class="card-footer border-top-0 pt-0 text-end">
                                         <button (click)="delete(item.id)" class="btn btn-sm btn-link text-danger p-0">

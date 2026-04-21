@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VeliOgretmenIletisim.Application.Features.MeetingNotes.Commands.CreateMeetingNote;
+using VeliOgretmenIletisim.Application.Features.MeetingNotes.Commands.DeleteMeetingNote;
 using VeliOgretmenIletisim.Application.Features.MeetingNotes.Queries.GetMeetingNotes;
 
 namespace VeliOgretmenIletisim.WebAPI.Controllers;
@@ -19,5 +20,12 @@ public class MeetingNotesController : BaseApiController
     public async Task<IActionResult> Create([FromBody] CreateMeetingNoteCommand command)
     {
         return HandleResult(await Mediator.Send(command));
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Teacher")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteMeetingNoteCommand(id)));
     }
 }

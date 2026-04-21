@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using VeliOgretmenIletisim.Domain.Entities;
 using VeliOgretmenIletisim.Domain.Enums;
 using VeliOgretmenIletisim.Infrastructure.Persistence.Context;
@@ -32,7 +33,7 @@ public static class ApplicationDbContextSeed
                 EmailConfirmed = true,
                 IsActive = true,
                 IsApproved = true,
-                Role = UserRole.Admin // Keep enum for business logic if needed
+                Role = UserRole.Admin 
             };
 
             var result = await userManager.CreateAsync(adminUser, "Admin123*");
@@ -42,45 +43,129 @@ public static class ApplicationDbContextSeed
             }
         }
 
-        // 3. Departments & Sample Teacher Seed
+        // 3. Departments
         if (!context.Departments.Any())
         {
-            var mathDept = new Department { Name = "Matematik" };
-            var scienceDept = new Department { Name = "Fen Bilimleri" };
-            context.Departments.AddRange(mathDept, scienceDept);
-            await context.SaveChangesAsync();
-
-            // Sample Teacher
-            var teacherEmail = "teacher@school.com";
-            if (await userManager.FindByEmailAsync(teacherEmail) == null)
+            string[] deptNames = { "Matematik", "Fen Bilimleri", "Türkçe", "Sosyal Bilgiler", "İngilizce", "Görsel Sanatlar", "Müzik", "Beden Eğitimi", "Bilişim Teknolojileri", "Rehberlik" };
+            foreach (var name in deptNames)
             {
-                var teacherUser = new AppUser
-                {
-                    UserName = teacherEmail,
-                    Email = teacherEmail,
-                    FirstName = "Ahmet",
-                    LastName = "Öğretmen",
-                    EmailConfirmed = true,
-                    IsActive = true,
-                    IsApproved = true,
-                    Role = UserRole.Teacher
-                };
+                context.Departments.Add(new Department { Name = name });
+            }
+            await context.SaveChangesAsync();
+        }
 
-                var result = await userManager.CreateAsync(teacherUser, "Teacher123*");
-                if (result.Succeeded)
+        var departments = await context.Departments.ToListAsync();
+
+        // 4. Sample Teachers
+        if (!context.Teachers.Any())
+        {
+            for (int i = 1; i <= 15; i++)
+            {
+                var email = $"teacher{i}@school.com";
+                if (await userManager.FindByEmailAsync(email) == null)
                 {
-                    await userManager.AddToRoleAsync(teacherUser, "Teacher");
-                    
-                    var teacherProfile = new Teacher
+                    var user = new AppUser
                     {
-                        AppUserId = teacherUser.Id,
-                        Branch = "Matematik",
-                        DepartmentId = mathDept.Id
+                        UserName = email,
+                        Email = email,
+                        FirstName = GetRandomName(),
+                        LastName = GetRandomSurname(),
+                        EmailConfirmed = true,
+                        IsActive = true,
+                        IsApproved = true,
+                        Role = UserRole.Teacher
                     };
-                    context.Teachers.Add(teacherProfile);
-                    await context.SaveChangesAsync();
+
+                    var result = await userManager.CreateAsync(user, "Teacher123*");
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(user, "Teacher");
+                        var dept = departments[i % departments.Count];
+                        var teacherProfile = new Teacher
+                        {
+                            AppUserId = user.Id,
+                            Branch = dept.Name,
+                            DepartmentId = dept.Id
+                        };
+                        context.Teachers.Add(teacherProfile);
+                    }
                 }
             }
+            await context.SaveChangesAsync();
         }
+
+        // 5. Sample Parents
+        if (!context.Parents.Any())
+        {
+            for (int i = 1; i <= 40; i++)
+            {
+                var email = $"parent{i}@example.com";
+                if (await userManager.FindByEmailAsync(email) == null)
+                {
+                    var user = new AppUser
+                    {
+                        UserName = email,
+                        Email = email,
+                        FirstName = GetRandomName(),
+                        LastName = GetRandomSurname(),
+                        EmailConfirmed = true,
+                        IsActive = true,
+                        IsApproved = true,
+                        Role = UserRole.Parent,
+                        PhoneNumber = "55500000" + i.ToString("D2")
+                    };
+
+                    var result = await userManager.CreateAsync(user, "Parent123*");
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(user, "Parent");
+                        var parentProfile = new Parent
+                        {
+                            AppUserId = user.Id,
+                            Occupation = "Meslek " + i
+                        };
+                        context.Parents.Add(parentProfile);
+                    }
+                }
+            }
+            await context.SaveChangesAsync();
+        }
+
+        // 6. Sample Students
+        if (!context.Students.Any())
+        {
+            var teacherIds = await context.Teachers.Select(t => t.Id).ToListAsync();
+            var parentIds = await context.Parents.Select(p => p.Id).ToListAsync();
+
+            if (teacherIds.Any() && parentIds.Any())
+            {
+                Random rnd = new Random();
+                for (int i = 1; i <= 100; i++)
+                {
+                    var student = new Student
+                    {
+                        FirstName = GetRandomName(),
+                        LastName = GetRandomSurname(),
+                        StudentNumber = (1000 + i).ToString(),
+                        ParentId = parentIds[rnd.Next(parentIds.Count)],
+                        TeacherId = teacherIds[rnd.Next(teacherIds.Count)]
+                    };
+                    context.Students.Add(student);
+                }
+                await context.SaveChangesAsync();
+            }
+        }
+    }
+
+    private static string GetRandomName()
+    {
+        string[] names = { "Ali", "Ayşe", "Mehmet", "Fatma", "Can", "Zeynep", "Mustafa", "Elif", "Burak", "Selin", "Emre", "Derya", "Arda", "Melis", "Kerem", "Bahar", "Okan", "Gamze" };
+        return names[new Random().Next(names.Length)];
+    }
+
+    private static string GetRandomSurname()
+    {
+        string[] surnames = { "Yılmaz", "Kaya", "Demir", "Çelik", "Şahin", "Yıldız", "Öztürk", "Aydın", "Özkan", "Aslan", "Kılıç", "Arslan", "Bulut", "Güneş", "Yavuz", "Koç" };
+        return surnames[new Random().Next(surnames.Length)];
     }
 }

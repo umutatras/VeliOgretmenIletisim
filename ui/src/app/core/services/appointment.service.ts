@@ -57,6 +57,14 @@ export class AppointmentService {
     return this.http.post<Result<any>>(`${this.apiUrl}/Teachers/availabilities`, command);
   }
 
+  updateAvailability(command: any): Observable<Result<any>> {
+    return this.http.put<Result<any>>(`${this.apiUrl}/Teachers/availabilities`, command);
+  }
+
+  deleteAvailability(id: string): Observable<Result<any>> {
+    return this.http.delete<Result<any>>(`${this.apiUrl}/Teachers/availabilities/${id}`);
+  }
+
   createAppointment(command: any): Observable<Result<any>> {
     return this.http.post<Result<any>>(`${this.apiUrl}/Appointments`, command);
   }

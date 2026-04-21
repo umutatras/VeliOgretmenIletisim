@@ -5,11 +5,11 @@ import { Result, PagedResult } from './announcement.service';
 
 export interface MeetingNote {
   id: string;
-  title: string;
-  content: string;
-  studentName?: string;
-  teacherName?: string;
+  note: string;
+  teacherName: string;
+  parentName: string;
   createdDate: string;
+  studentName: string;
 }
 
 @Injectable({
@@ -24,8 +24,12 @@ export class MeetingNoteService {
     return this.http.get<Result<PagedResult<MeetingNote>>>(`${this.apiUrl}?pageNumber=${page}&pageSize=${size}`);
   }
 
-  create(title: string, content: string): Observable<Result<any>> {
-    return this.http.post<Result<any>>(this.apiUrl, { title, content });
+  create(parentId: string, note: string): Observable<Result<any>> {
+    return this.http.post<Result<any>>(this.apiUrl, { parentId, note });
+  }
+
+  getMyStudentsForTeacher(): Observable<Result<any[]>> {
+    return this.http.get<Result<any[]>>('https://localhost:7273/api/Teachers/my-students');
   }
 
   delete(id: string): Observable<Result<any>> {

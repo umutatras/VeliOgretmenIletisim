@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MeetingNoteService, MeetingNote } from '../../core/services/meeting-note.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-meeting-notes',
@@ -12,15 +13,15 @@ import { MeetingNoteService, MeetingNote } from '../../core/services/meeting-not
 export class MeetingNotesComponent implements OnInit {
   notes = signal<MeetingNote[]>([]);
   isLoading = signal(true);
-
-  // Regular strings for ngModel
-  title = '';
-  content = '';
+  students = signal<any[]>([]);
+  selectedParentId = '';
+  note = '';
 
   constructor(private meetingNoteService: MeetingNoteService) {}
 
   ngOnInit() {
     this.loadNotes();
+    this.loadMyStudents();
   }
 
   loadNotes() {
@@ -34,22 +35,56 @@ export class MeetingNotesComponent implements OnInit {
     });
   }
 
+  loadMyStudents() {
+    this.meetingNoteService.getMyStudentsForTeacher().subscribe(res => {
+      if (res.isSuccess) this.students.set(res.data);
+    });
+  }
+
   create() {
-    if (!this.title || !this.content) return;
-    this.meetingNoteService.create(this.title, this.content).subscribe(res => {
+    if (!this.selectedParentId || !this.note) {
+      Swal.fire('Uyarı', 'Lütfen bir veli seçin ve notunuzu yazın.', 'warning');
+      return;
+    }
+
+    this.meetingNoteService.create(this.selectedParentId, this.note).subscribe(res => {
       if (res.isSuccess) {
-        this.title = '';
-        this.content = '';
+        Swal.fire({
+          icon: 'success',
+          title: 'Başarılı!',
+          text: 'Görüşme notu başarıyla paylaşıldı.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        this.note = '';
         this.loadNotes();
+      } else {
+        Swal.fire('Hata', res.message, 'error');
       }
     });
   }
 
   delete(id: string) {
-    if (confirm('Bu notu silmek istiyor musunuz?')) {
-      this.meetingNoteService.delete(id).subscribe(res => {
-        if (res.isSuccess) this.loadNotes();
-      });
-    }
+    Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu görüşme notu kalıcı olarak silinecektir!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.meetingNoteService.delete(id).subscribe(res => {
+          if (res.isSuccess) {
+            Swal.fire('Silindi!', 'Not başarıyla kaldırıldı.', 'success');
+            this.loadNotes();
+          } else {
+            Swal.fire('Hata', res.message, 'error');
+          }
+        });
+      }
+    });
   }
 }
