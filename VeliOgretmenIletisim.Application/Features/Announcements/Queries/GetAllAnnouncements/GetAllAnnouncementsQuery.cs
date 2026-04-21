@@ -6,7 +6,7 @@ using VeliOgretmenIletisim.Domain.Entities;
 
 namespace VeliOgretmenIletisim.Application.Features.Announcements.Queries.GetAllAnnouncements;
 
-public record GetAllAnnouncementsQuery(int PageNumber = 1, int PageSize = 10) : IRequest<Result<PagedResult<AnnouncementDto>>>;
+public record GetAllAnnouncementsQuery(int PageNumber = 1, int PageSize = 10, string? SearchTerm = null) : IRequest<Result<PagedResult<AnnouncementDto>>>;
 
 public class AnnouncementDto
 {
@@ -34,7 +34,16 @@ public class GetAllAnnouncementsQueryHandler : IRequestHandler<GetAllAnnouncemen
             .AsNoTracking()
             .Include(a => a.Teacher)
             .ThenInclude(t => t.AppUser)
-            .OrderByDescending(a => a.CreatedDate);
+            .OrderByDescending(a => a.CreatedDate)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var searchTerm = request.SearchTerm.Trim().ToLower();
+            query = query.Where(a => 
+                a.Title.ToLower().Contains(searchTerm) || 
+                a.Content.ToLower().Contains(searchTerm));
+        }
 
         var totalCount = await query.CountAsync(cancellationToken);
         

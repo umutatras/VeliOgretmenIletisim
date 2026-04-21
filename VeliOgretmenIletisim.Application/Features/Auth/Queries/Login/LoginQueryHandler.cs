@@ -46,7 +46,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, Result<LoginRespons
         {
             Token = token,
             FullName = $"{user.FirstName} {user.LastName}",
-            Role = user.Role.ToString(),
+            Role = user.Role.ToString().Trim(), // Explicitly send the name (e.g., "Admin", "Teacher")
             ProfilePicturePath = user.ProfilePicturePath
         });
     }

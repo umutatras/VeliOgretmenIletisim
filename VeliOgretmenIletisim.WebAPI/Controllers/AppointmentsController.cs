@@ -9,9 +9,9 @@ namespace VeliOgretmenIletisim.WebAPI.Controllers;
 public class AppointmentsController : BaseApiController
 {
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> Get([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null)
     {
-        return HandleResult(await Mediator.Send(new GetAppointmentsQuery(pageNumber, pageSize)));
+        return HandleResult(await Mediator.Send(new GetAppointmentsQuery(pageNumber, pageSize, searchTerm)));
     }
 
     [HttpPost]

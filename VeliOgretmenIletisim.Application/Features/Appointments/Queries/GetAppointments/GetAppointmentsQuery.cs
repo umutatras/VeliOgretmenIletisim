@@ -9,10 +9,12 @@ public class GetAppointmentsQuery : IRequest<Result<PagedResult<AppointmentDto>>
 {
     public int PageNumber { get; set; }
     public int PageSize { get; set; }
+    public string? SearchTerm { get; set; }
 
-    public GetAppointmentsQuery(int pageNumber, int pageSize)
+    public GetAppointmentsQuery(int pageNumber = 1, int pageSize = 10, string? searchTerm = null)
     {
         PageNumber = pageNumber;
         PageSize = pageSize;
+        SearchTerm = searchTerm;
     }
 }

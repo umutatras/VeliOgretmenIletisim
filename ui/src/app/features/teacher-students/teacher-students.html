@@ -1,5 +1,5 @@
 <div class="page-header">
-    <h1 class="page-title">Öğrencilerim</h1>
+    <h1 class="page-title">Öğrenci Yönetimi</h1>
     <div>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="javascript:void(0);">İletişim</a></li>
@@ -9,10 +9,11 @@
 </div>
 
 <div class="row">
+    <!-- Student Form -->
     <div class="col-md-12 col-xl-4">
         <div class="card">
             <div class="card-header border-bottom">
-                <h3 class="card-title">{{ isEditing() ? 'Öğrenci Güncelle' : 'Yeni Öğrenci Ekle' }}</h3>
+                <h3 class="card-title">{{ isEditing() ? 'Öğrenci Düzenle' : 'Yeni Öğrenci Ekle' }}</h3>
             </div>
             <div class="card-body">
                 <div class="form-group">
@@ -27,35 +28,55 @@
                     <label class="form-label">Öğrenci Numarası</label>
                     <input type="text" class="form-control" [(ngModel)]="newStudent.studentNumber" placeholder="Numara">
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label">Veli Seçimi</label>
                     <select class="form-control form-select" [(ngModel)]="newStudent.parentId">
-                        <option value="">Veli Seçiniz...</option>
-                        @for (p of parents(); track p.id) {
-                            <option [value]="p.id">{{ p.fullName }} ({{ p.email }})</option>
-                        }
+                        <option [ngValue]="null">Veli Seçiniz...</option>
+                        <option *ngFor="let p of parents()" [value]="p.id">{{ p.fullName }}</option>
                     </select>
                 </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-primary flex-fill mt-3" (click)="saveStudent()">
+
+                @if (currentUser()?.role === 'Admin') {
+                    <div class="form-group">
+                        <label class="form-label">Öğretmen Seçimi</label>
+                        <select class="form-control form-select" [(ngModel)]="newStudent.teacherId">
+                            <option [ngValue]="null">Atanmamış (Öğretmen Seçilmedi)</option>
+                            <option *ngFor="let t of teachers()" [value]="t.id">{{ t.fullName }}</option>
+                        </select>
+                        <small class="text-muted">Admin iseniz mutlaka bir öğretmen seçiniz.</small>
+                    </div>
+                }
+
+                <div class="d-flex gap-2 mt-4">
+                    <button class="btn btn-primary flex-fill" (click)="saveStudent()">
                         <i class="fe fe-save me-1"></i> {{ isEditing() ? 'Güncelle' : 'Öğrenciyi Kaydet' }}
                     </button>
-                    @if (isEditing()) {
-                        <button class="btn btn-light mt-3" (click)="resetForm()">İptal</button>
-                    }
+                    <button *ngIf="isEditing()" class="btn btn-light" (click)="resetForm()">İptal</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Student List -->
     <div class="col-md-12 col-xl-8">
         <div class="card">
-            <div class="card-header border-bottom">
-                <h3 class="card-title">Sınıf Listem</h3>
+            <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Öğrenci Listesi</h3>
+                <div class="input-group w-50">
+                    <input type="text" class="form-control" placeholder="İsim veya No ile ara..." [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" (keyup.enter)="onSearch()">
+                    <button class="btn btn-primary" (click)="onSearch()">
+                        <i class="fe fe-search"></i>
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 @if (isLoading()) {
-                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                    </div>
                 } @else {
                     <div class="table-responsive">
                         <table class="table table-bordered text-nowrap border-bottom">
@@ -85,11 +106,29 @@
                                 }
                                 @if (students().length === 0) {
                                     <tr>
-                                        <td colspan="4" class="text-center p-5 text-muted">Henüz öğrenci eklenmemiş.</td>
+                                        <td colspan="4" class="text-center p-5 text-muted">Henüz öğrenci eklenmemiş veya arama kriterine uygun sonuç bulunamadı.</td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mt-4" *ngIf="totalCount() > pageSize()">
+                        <div class="text-muted small">
+                            Toplam {{ totalCount() }} öğrenciden {{ (pageNumber() - 1) * pageSize() + 1 }} - {{ Math.min(pageNumber() * pageSize(), totalCount()) }} arası gösteriliyor
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item" [class.disabled]="pageNumber() === 1">
+                                    <a class="page-link" href="javascript:void(0);" (click)="onPageChange(pageNumber() - 1)">Geri</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="javascript:void(0);">{{ pageNumber() }}</a></li>
+                                <li class="page-item" [class.disabled]="pageNumber() * pageSize() >= totalCount()">
+                                    <a class="page-link" href="javascript:void(0);" (click)="onPageChange(pageNumber() + 1)">İleri</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 }
             </div>

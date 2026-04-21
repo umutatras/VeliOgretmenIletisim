@@ -8,7 +8,7 @@ export interface LoginResponse {
   message: string;
   data: {
     token: string;
-    userName: string;
+    fullName: string;
     role: string;
     profilePicturePath?: string;
   };
@@ -37,16 +37,19 @@ export class AuthService {
       );
 
       if (response.isSuccess && response.data) {
+        const rawData = response.data as any;
         const userData = { 
-          userName: response.data.userName, 
-          role: response.data.role,
-          profilePicturePath: response.data.profilePicturePath
+          userName: rawData.fullName || rawData.FullName, 
+          role: rawData.role || rawData.Role,
+          profilePicturePath: rawData.profilePicturePath || rawData.ProfilePicturePath
         };
         
-        this.token.set(response.data.token);
+        console.log('Login successful, user data mapped:', userData);
+
+        this.token.set(rawData.token || rawData.Token);
         this.currentUser.set(userData);
         
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', rawData.token || rawData.Token);
         localStorage.setItem('user', JSON.stringify(userData));
         
         return true;

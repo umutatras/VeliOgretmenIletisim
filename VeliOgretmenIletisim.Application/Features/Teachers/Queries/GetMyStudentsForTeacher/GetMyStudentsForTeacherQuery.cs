@@ -5,6 +5,16 @@ namespace VeliOgretmenIletisim.Application.Features.Teachers.Queries.GetMyStuden
 
 public record TeacherStudentDto(Guid Id, string FirstName, string LastName, string StudentNumber, Guid ParentId, string ParentName);
 
-public class GetMyStudentsForTeacherQuery : IRequest<Result<List<TeacherStudentDto>>>
+public class GetMyStudentsForTeacherQuery : IRequest<Result<PagedResult<TeacherStudentDto>>>
 {
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
+    public string? SearchTerm { get; set; }
+
+    public GetMyStudentsForTeacherQuery(int pageNumber = 1, int pageSize = 10, string? searchTerm = null)
+    {
+        PageNumber = pageNumber;
+        PageSize = pageSize;
+        SearchTerm = searchTerm;
+    }
 }

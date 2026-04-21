@@ -20,6 +20,13 @@ public class AdminAddStudentCommandHandler : IRequestHandler<AdminAddStudentComm
 
     public async Task<Result<Guid>> Handle(AdminAddStudentCommand request, CancellationToken cancellationToken)
     {
+        var existingStudent = await _uow.GetRepository<Student>()
+            .GetAll()
+            .FirstOrDefaultAsync(s => s.StudentNumber == request.StudentNumber, cancellationToken);
+
+        if (existingStudent != null)
+            return Result<Guid>.Failure($"'{request.StudentNumber}' numaralı öğrenci zaten kayıtlı.");
+
         var parent = await _uow.GetRepository<Parent>()
             .GetAll()
             .Include(p => p.AppUser)

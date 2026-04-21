@@ -63,9 +63,9 @@ public class AdminController : BaseApiController
 
     // Students
     [HttpGet("students")]
-    public async Task<IActionResult> GetStudents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetStudents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 50, [FromQuery] string? searchTerm = null)
     {
-        return HandleResult(await Mediator.Send(new GetAllStudentsQuery(pageNumber, pageSize)));
+        return HandleResult(await Mediator.Send(new GetAllStudentsQuery(pageNumber, pageSize, searchTerm)));
     }
 
     [HttpPost("students")]

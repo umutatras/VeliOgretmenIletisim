@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Result } from './announcement.service';
+import { Result, PagedResult } from './announcement.service';
 
 export interface TeacherStudent {
   id: string;
@@ -19,8 +19,8 @@ export class TeacherService {
   private http = inject(HttpClient);
   private apiUrl = 'https://localhost:7273/api/Teachers';
 
-  getMyStudents(): Observable<Result<TeacherStudent[]>> {
-    return this.http.get<Result<TeacherStudent[]>>(`${this.apiUrl}/my-students`);
+  getMyStudents(page: number = 1, size: number = 10, searchTerm: string = ''): Observable<Result<PagedResult<TeacherStudent>>> {
+    return this.http.get<Result<PagedResult<TeacherStudent>>>(`${this.apiUrl}/my-students?pageNumber=${page}&pageSize=${size}&searchTerm=${searchTerm}`);
   }
 
   addStudent(student: any): Observable<Result<any>> {
@@ -36,7 +36,10 @@ export class TeacherService {
   }
 
   getParents(): Observable<Result<any[]>> {
-    // We can use a public endpoint or admin endpoint for list (if authorized)
-    return this.http.get<Result<any[]>>('https://localhost:7273/api/Admin/users-by-role/Parent');
+    return this.http.get<Result<any[]>>(`${this.apiUrl}/parents-lookup`);
+  }
+
+  getTeachers(): Observable<Result<any[]>> {
+    return this.http.get<Result<any[]>>(`${this.apiUrl}/teachers-lookup`);
   }
 }

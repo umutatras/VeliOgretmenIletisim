@@ -6,7 +6,7 @@ import { Result, PagedResult } from './announcement.service';
 export interface Complaint {
   id: string;
   subject: string;
-  content: string;
+  description: string;
   adminResponse?: string;
   status: string;
   parentName: string;
@@ -24,8 +24,8 @@ export class ComplaintService {
     return this.http.get<Result<PagedResult<Complaint>>>(`${this.apiUrl}?pageNumber=${page}&pageSize=${size}`);
   }
 
-  create(subject: string, content: string): Observable<Result<any>> {
-    return this.http.post<Result<any>>(this.apiUrl, { subject, content });
+  create(subject: string, description: string): Observable<Result<any>> {
+    return this.http.post<Result<any>>(this.apiUrl, { subject, description });
   }
 
   answer(complaintId: string, response: string, status: number): Observable<Result<any>> {

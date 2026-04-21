@@ -6,7 +6,7 @@ using VeliOgretmenIletisim.Domain.Entities;
 
 namespace VeliOgretmenIletisim.Application.Features.Students.Queries.GetAllStudents;
 
-public record GetAllStudentsQuery(int PageNumber = 1, int PageSize = 10) : IRequest<Result<PagedResult<StudentDto>>>;
+public record GetAllStudentsQuery(int PageNumber = 1, int PageSize = 50, string? SearchTerm = null) : IRequest<Result<PagedResult<StudentDto>>>;
 
 public class StudentDto
 {
@@ -37,7 +37,17 @@ public class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, R
             .Include(s => s.Parent)
             .ThenInclude(p => p.AppUser)
             .Include(s => s.Teacher)
-            .ThenInclude(t => t.AppUser);
+            .ThenInclude(t => t.AppUser)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var searchTerm = request.SearchTerm.Trim().ToLower();
+            query = query.Where(s => 
+                s.FirstName.ToLower().Contains(searchTerm) || 
+                s.LastName.ToLower().Contains(searchTerm) || 
+                s.StudentNumber.ToLower().Contains(searchTerm));
+        }
 
         var totalCount = await query.CountAsync(cancellationToken);
         
@@ -51,9 +61,13 @@ public class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, R
                 FirstName = s.FirstName,
                 LastName = s.LastName,
                 StudentNumber = s.StudentNumber,
-                ParentName = $"{s.Parent.AppUser.FirstName} {s.Parent.AppUser.LastName}",
+                ParentName = s.Parent != null && s.Parent.AppUser != null 
+                    ? s.Parent.AppUser.FirstName + " " + s.Parent.AppUser.LastName 
+                    : "Bilinmiyor",
                 ParentId = s.ParentId,
-                TeacherName = s.Teacher != null ? $"{s.Teacher.AppUser.FirstName} {s.Teacher.AppUser.LastName}" : null,
+                TeacherName = s.Teacher != null && s.Teacher.AppUser != null 
+                    ? s.Teacher.AppUser.FirstName + " " + s.Teacher.AppUser.LastName 
+                    : null,
                 TeacherId = s.TeacherId
             })
             .ToListAsync(cancellationToken);

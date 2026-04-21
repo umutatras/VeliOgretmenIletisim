@@ -21,7 +21,7 @@ export class ComplaintsComponent implements OnInit {
 
   // Form Fields
   subject = '';
-  content = '';
+  description = '';
   
   // Admin Response Fields
   selectedComplaint: Complaint | null = null;
@@ -46,16 +46,16 @@ export class ComplaintsComponent implements OnInit {
   }
 
   sendComplaint() {
-    if (!this.subject || !this.content) {
-      Swal.fire('Uyarı', 'Lütfen konu ve içerik girin.', 'warning');
+    if (!this.subject || !this.description) {
+      Swal.fire('Uyarı', 'Lütfen konu ve açıklama girin.', 'warning');
       return;
     }
 
-    this.complaintService.create(this.subject, this.content).subscribe(res => {
+    this.complaintService.create(this.subject, this.description).subscribe(res => {
       if (res.isSuccess) {
         Swal.fire('Gönderildi', 'Talebiniz başarıyla iletildi.', 'success');
         this.subject = '';
-        this.content = '';
+        this.description = '';
         this.loadComplaints();
       }
     });
@@ -87,11 +87,21 @@ export class ComplaintsComponent implements OnInit {
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
-      case 'Beklemede': return 'bg-warning';
-      case 'İnceleniyor': return 'bg-info';
-      case 'Tamamlandı': return 'bg-success';
-      case 'Reddedildi': return 'bg-danger';
-      default: return 'bg-primary';
+      case 'Pending': return 'bg-warning-transparent text-warning';
+      case 'InProgress': return 'bg-info-transparent text-info';
+      case 'Resolved': return 'bg-success-transparent text-success';
+      case 'Rejected': return 'bg-danger-transparent text-danger';
+      default: return 'bg-primary-transparent text-primary';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'Pending': return 'Beklemede';
+      case 'InProgress': return 'İnceleniyor';
+      case 'Resolved': return 'Tamamlandı';
+      case 'Rejected': return 'Reddedildi';
+      default: return status;
     }
   }
 }

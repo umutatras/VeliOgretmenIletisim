@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <label class="form-label">Öğretmen Seçimi (Opsiyonel)</label>
                     <select class="form-control form-select" [(ngModel)]="newStudent.teacherId">
-                        <option [value]="null">Öğretmen Atanmasın</option>
+                        <option [value]="null">Atanmamış (Boş Bırak)</option>
                         @for (t of teachers(); track t.id) {
                             <option [value]="t.id">{{ t.fullName }} ({{ t.email }})</option>
                         }
@@ -59,8 +59,14 @@
 
     <div class="col-md-12 col-xl-8">
         <div class="card">
-            <div class="card-header border-bottom">
+            <div class="card-header border-bottom d-flex justify-content-between align-items-center">
                 <h3 class="card-title">Kayıtlı Öğrenciler</h3>
+                <div class="input-group w-50">
+                    <input type="text" class="form-control" placeholder="İsim veya No ile ara..." [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" (keyup.enter)="onSearch()">
+                    <button class="btn btn-primary" (click)="onSearch()">
+                        <i class="fe fe-search"></i>
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 @if (isLoading()) {
@@ -102,6 +108,24 @@
                                 }
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mt-4" *ngIf="totalPages() > 1">
+                        <div class="text-muted small">
+                            Toplam {{ totalCount() }} öğrenciden {{ (currentPage() - 1) * 50 + 1 }} - {{ Math.min(currentPage() * 50, totalCount()) }} arası gösteriliyor
+                        </div>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item" [class.disabled]="currentPage() === 1">
+                                    <a class="page-link" href="javascript:void(0);" (click)="loadStudents(currentPage() - 1)">Geri</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="javascript:void(0);">{{ currentPage() }}</a></li>
+                                <li class="page-item" [class.disabled]="currentPage() === totalPages()">
+                                    <a class="page-link" href="javascript:void(0);" (click)="loadStudents(currentPage() + 1)">İleri</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 }
             </div>

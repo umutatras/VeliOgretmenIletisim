@@ -12,11 +12,14 @@ import Swal from 'sweetalert2';
 })
 export class StudentsComponent implements OnInit {
   private adminService = inject(AdminService);
+  public readonly Math = Math;
   
   students = signal<Student[]>([]);
   isLoading = signal(true);
+  totalCount = signal(0);
   currentPage = signal(1);
   totalPages = signal(1);
+  searchTerm = signal('');
 
   // Form Data
   newStudent: any = {
@@ -39,17 +42,23 @@ export class StudentsComponent implements OnInit {
 
   loadStudents(page: number = 1) {
     this.isLoading.set(true);
-    this.adminService.getStudents(page, 10).subscribe({
+    this.adminService.getStudents(page, 50, this.searchTerm()).subscribe({
       next: (res) => {
         if (res.isSuccess) {
           this.students.set(res.data.items);
           this.totalPages.set(res.data.totalPages);
           this.currentPage.set(res.data.pageNumber);
+          this.totalCount.set(res.data.totalCount);
         }
         this.isLoading.set(false);
       },
       error: () => this.isLoading.set(false)
     });
+  }
+
+  onSearch() {
+    this.currentPage.set(1);
+    this.loadStudents(1);
   }
 
   loadSelectionLists() {
@@ -82,13 +91,20 @@ export class StudentsComponent implements OnInit {
       ? this.adminService.updateStudent(this.newStudent)
       : this.adminService.createStudent(this.newStudent);
 
-    request.subscribe(res => {
-      if (res.isSuccess) {
-        Swal.fire('Başarılı', this.isEditing() ? 'Öğrenci güncellendi.' : 'Öğrenci eklendi.', 'success');
-        this.resetForm();
-        this.loadStudents(this.currentPage());
-      } else {
-        Swal.fire('Hata', res.message, 'error');
+    request.subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          Swal.fire('Başarılı', this.isEditing() ? 'Öğrenci güncellendi.' : 'Öğrenci eklendi.', 'success');
+          this.resetForm();
+          this.currentPage.set(1);
+          this.searchTerm.set(''); // Arama kutusunu temizle
+          this.loadStudents(1);
+        } else {
+          Swal.fire('Hata', res.message, 'error');
+        }
+      },
+      error: (err) => {
+        Swal.fire('Hata', err.error?.message || 'Bir hata oluştu.', 'error');
       }
     });
   }

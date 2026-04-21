@@ -37,8 +37,8 @@ export class AppointmentService {
   private http = inject(HttpClient);
   private apiUrl = 'https://localhost:7273/api';
 
-  getAppointments(page: number = 1, size: number = 10): Observable<Result<PagedResult<Appointment>>> {
-    return this.http.get<Result<PagedResult<Appointment>>>(`${this.apiUrl}/Appointments?pageNumber=${page}&pageSize=${size}`);
+  getAppointments(page: number = 1, size: number = 10, searchTerm: string = ''): Observable<Result<PagedResult<Appointment>>> {
+    return this.http.get<Result<PagedResult<Appointment>>>(`${this.apiUrl}/Appointments?pageNumber=${page}&pageSize=${size}&searchTerm=${searchTerm}`);
   }
 
   getTeacherAvailabilities(teacherId: string): Observable<Result<Availability[]>> {

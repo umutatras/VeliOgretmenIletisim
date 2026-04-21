@@ -36,9 +36,16 @@ public class UpdateStudentCommandHandler : IRequestHandler<UpdateStudentCommand,
 
             if (teacher == null || student.TeacherId != teacher.Id)
                 return Result.Failure("Bu öğrenciyi güncelleme yetkiniz bulunmamaktadır.", 403);
+        }
+
+        if (student.StudentNumber != request.StudentNumber)
+        {
+            var numberExists = await _uow.GetRepository<Student>()
+                .GetAll()
+                .AnyAsync(s => s.StudentNumber == request.StudentNumber, cancellationToken);
             
-            // Öğretmen kendi ID'sini değiştiremez, admin yapabilir
-            // Ama öğretmen kendi eklediği öğrencinin bilgilerini güncelleyebilir.
+            if (numberExists)
+                return Result.Failure($"'{request.StudentNumber}' numaralı öğrenci zaten kayıtlı.");
         }
 
         student.FirstName = request.FirstName;

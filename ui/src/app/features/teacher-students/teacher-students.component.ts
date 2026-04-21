@@ -2,6 +2,7 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TeacherService, TeacherStudent } from '../../core/services/teacher.service';
+import { AuthService } from '../../core/services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -12,30 +13,42 @@ import Swal from 'sweetalert2';
 })
 export class TeacherStudentsComponent implements OnInit {
   private teacherService = inject(TeacherService);
+  private authService = inject(AuthService);
+  public readonly Math = Math;
   
+  currentUser = this.authService.currentUser;
   students = signal<TeacherStudent[]>([]);
-  parents = signal<any[]>([]);
-  isLoading = signal(true);
-  isEditing = signal(false);
+  teachers = signal<any[]>([]);
 
   newStudent: any = {
     firstName: '',
     lastName: '',
     studentNumber: '',
-    parentId: null
+    parentId: null,
+    teacherId: null
   };
+
+  searchTerm = signal('');
+  pageNumber = signal(1);
+  pageSize = signal(10);
+  totalCount = signal(0);
+  isLoading = signal(false);
+  isEditing = signal(false);
+  parents = signal<any[]>([]);
 
   ngOnInit() {
     this.loadStudents();
     this.loadParents();
+    this.loadTeachers();
   }
 
   loadStudents() {
     this.isLoading.set(true);
-    this.teacherService.getMyStudents().subscribe({
+    this.teacherService.getMyStudents(this.pageNumber(), this.pageSize(), this.searchTerm()).subscribe({
       next: (res) => {
-        if (res.isSuccess) {
-          this.students.set(res.data);
+        if (res.isSuccess && res.data) {
+          this.students.set(res.data.items);
+          this.totalCount.set(res.data.totalCount);
         }
         this.isLoading.set(false);
       },
@@ -43,9 +56,24 @@ export class TeacherStudentsComponent implements OnInit {
     });
   }
 
+  onPageChange(page: number) {
+    this.pageNumber.set(page);
+    this.loadStudents();
+  }
+
+  onSearch() {
+    this.loadStudents();
+  }
+
   loadParents() {
     this.teacherService.getParents().subscribe(res => {
       if (res.isSuccess) this.parents.set(res.data);
+    });
+  }
+
+  loadTeachers() {
+    this.teacherService.getTeachers().subscribe(res => {
+      if (res.isSuccess) this.teachers.set(res.data);
     });
   }
 
@@ -65,13 +93,20 @@ export class TeacherStudentsComponent implements OnInit {
       ? this.teacherService.updateStudent(this.newStudent)
       : this.teacherService.addStudent(this.newStudent);
 
-    request.subscribe(res => {
-      if (res.isSuccess) {
-        Swal.fire('Başarılı', this.isEditing() ? 'Öğrenci güncellendi.' : 'Öğrenci eklendi.', 'success');
-        this.resetForm();
-        this.loadStudents();
-      } else {
-        Swal.fire('Hata', res.message, 'error');
+    request.subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          Swal.fire('Başarılı', this.isEditing() ? 'Öğrenci güncellendi.' : 'Öğrenci eklendi.', 'success');
+          this.resetForm();
+          this.pageNumber.set(1);
+          this.searchTerm.set(''); // Arama kutusunu temizle
+          this.loadStudents();
+        } else {
+          Swal.fire('Hata', res.message, 'error');
+        }
+      },
+      error: (err) => {
+        Swal.fire('Hata', err.error?.message || 'Bir hata oluştu.', 'error');
       }
     });
   }
@@ -104,7 +139,8 @@ export class TeacherStudentsComponent implements OnInit {
       firstName: '',
       lastName: '',
       studentNumber: '',
-      parentId: null
+      parentId: null,
+      teacherId: null
     };
   }
 }

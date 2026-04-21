@@ -37,7 +37,9 @@ export class MeetingNotesComponent implements OnInit {
 
   loadMyStudents() {
     this.meetingNoteService.getMyStudentsForTeacher().subscribe(res => {
-      if (res.isSuccess) this.students.set(res.data);
+      if (res.isSuccess && res.data) {
+        this.students.set(res.data.items);
+      }
     });
   }
 

@@ -23,15 +23,31 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
 
     public async Task<Result<Guid>> Handle(TeacherAddStudentCommand request, CancellationToken cancellationToken)
     {
-        var currentUserId = _currentUserService.UserId;
-        
-        var teacher = await _uow.GetRepository<Teacher>()
-            .GetAll()
-            .Include(t => t.AppUser)
-            .FirstOrDefaultAsync(t => t.AppUserId == currentUserId, cancellationToken);
+        Guid? teacherId = null;
 
-        if (teacher == null)
-            return Result<Guid>.Failure("Teacher profile not found for current user.");
+        if (request.TeacherId.HasValue && request.TeacherId != Guid.Empty)
+        {
+            teacherId = request.TeacherId.Value;
+        }
+        else if (_currentUserService.Role != "Admin")
+        {
+            var currentUserId = _currentUserService.UserId;
+            var teacher = await _uow.GetRepository<Teacher>()
+                .GetAll()
+                .FirstOrDefaultAsync(t => t.AppUserId == currentUserId, cancellationToken);
+
+            if (teacher == null)
+                return Result<Guid>.Failure("Giriş yapan kullanıcının öğretmen profili bulunamadı.");
+            
+            teacherId = teacher.Id;
+        }
+
+        var existingStudent = await _uow.GetRepository<Student>()
+            .GetAll()
+            .FirstOrDefaultAsync(s => s.StudentNumber == request.StudentNumber, cancellationToken);
+
+        if (existingStudent != null)
+            return Result<Guid>.Failure($"'{request.StudentNumber}' numaralı öğrenci zaten kayıtlı.");
 
         var parent = await _uow.GetRepository<Parent>()
             .GetAll()
@@ -39,7 +55,7 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
             .FirstOrDefaultAsync(p => p.Id == request.ParentId, cancellationToken);
 
         if (parent == null)
-            return Result<Guid>.Failure("Parent not found.");
+            return Result<Guid>.Failure("Veli bulunamadı.");
 
         var student = new Student
         {
@@ -47,7 +63,7 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
             LastName = request.LastName,
             StudentNumber = request.StudentNumber,
             ParentId = request.ParentId,
-            TeacherId = teacher.Id
+            TeacherId = teacherId
         };
 
         await _uow.GetRepository<Student>().AddAsync(student);
@@ -56,10 +72,14 @@ public class TeacherAddStudentCommandHandler : IRequestHandler<TeacherAddStudent
         // Real-time notification to Parent
         if (parent.AppUser != null)
         {
+            var teacher = await _uow.GetRepository<Teacher>().GetAll()
+                .Include(t => t.AppUser)
+                .FirstOrDefaultAsync(t => t.Id == teacherId, cancellationToken);
+
             await _notificationService.SendToUserAsync(parent.AppUserId, 
-                $"{student.FirstName} {student.LastName} has been linked to your account by teacher {teacher.AppUser?.FirstName} {teacher.AppUser?.LastName}.", "StudentAdded");
+                $"{student.FirstName} {student.LastName} isimli öğrenci {teacher?.AppUser?.FirstName} {teacher?.AppUser?.LastName} öğretmeni ile ilişkilendirildi.", "StudentAdded");
         }
 
-        return Result<Guid>.Success(student.Id, "Student registered successfully by teacher.");
+        return Result<Guid>.Success(student.Id, "Öğrenci başarıyla kaydedildi.");
     }
 }

@@ -38,6 +38,15 @@ public class GetAppointmentsQueryHandler : IRequestHandler<GetAppointmentsQuery,
             query = query.Where(a => a.Availability.Teacher.AppUserId == userId);
         }
 
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var searchTerm = request.SearchTerm.Trim().ToLower();
+            query = query.Where(a => 
+                (a.Parent.AppUser.FirstName + " " + a.Parent.AppUser.LastName).ToLower().Contains(searchTerm) || 
+                (a.Student.FirstName + " " + a.Student.LastName).ToLower().Contains(searchTerm) ||
+                (a.Availability.Teacher.AppUser.FirstName + " " + a.Availability.Teacher.AppUser.LastName).ToLower().Contains(searchTerm));
+        }
+
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderByDescending(a => a.Availability.StartTime)

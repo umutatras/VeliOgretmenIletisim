@@ -12,7 +12,7 @@ using VeliOgretmenIletisim.Application.Features.Teachers.Queries.GetMyStudentsFo
 
 namespace VeliOgretmenIletisim.WebAPI.Controllers;
 
-[Authorize(Roles = "Teacher")]
+[Authorize(Roles = "Teacher,Admin")]
 public class TeachersController : BaseApiController
 {
     [HttpGet("my-availabilities")]
@@ -22,9 +22,9 @@ public class TeachersController : BaseApiController
     }
 
     [HttpGet("my-students")]
-    public async Task<IActionResult> GetMyStudents()
+    public async Task<IActionResult> GetMyStudents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null)
     {
-        return HandleResult(await Mediator.Send(new GetMyStudentsForTeacherQuery()));
+        return HandleResult(await Mediator.Send(new GetMyStudentsForTeacherQuery(pageNumber, pageSize, searchTerm)));
     }
 
     [HttpPost("announcements")]
@@ -73,5 +73,17 @@ public class TeachersController : BaseApiController
     public async Task<IActionResult> UpdateStudent([FromBody] UpdateStudentCommand command)
     {
         return HandleResult(await Mediator.Send(command));
+    }
+
+    [HttpGet("parents-lookup")]
+    public async Task<IActionResult> GetParents()
+    {
+        return HandleResult(await Mediator.Send(new VeliOgretmenIletisim.Application.Features.Admin.Queries.GetUsersByRole.GetUsersByRoleQuery(VeliOgretmenIletisim.Domain.Enums.UserRole.Parent)));
+    }
+
+    [HttpGet("teachers-lookup")]
+    public async Task<IActionResult> GetTeachers()
+    {
+        return HandleResult(await Mediator.Send(new VeliOgretmenIletisim.Application.Features.Admin.Queries.GetUsersByRole.GetUsersByRoleQuery(VeliOgretmenIletisim.Domain.Enums.UserRole.Teacher)));
     }
 }

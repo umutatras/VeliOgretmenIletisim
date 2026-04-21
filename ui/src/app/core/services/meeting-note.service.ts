@@ -28,8 +28,8 @@ export class MeetingNoteService {
     return this.http.post<Result<any>>(this.apiUrl, { parentId, note });
   }
 
-  getMyStudentsForTeacher(): Observable<Result<any[]>> {
-    return this.http.get<Result<any[]>>('https://localhost:7273/api/Teachers/my-students');
+  getMyStudentsForTeacher(): Observable<Result<PagedResult<any>>> {
+    return this.http.get<Result<PagedResult<any>>>('https://localhost:7273/api/Teachers/my-students?pageSize=100');
   }
 
   delete(id: string): Observable<Result<any>> {

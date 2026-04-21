@@ -58,8 +58,8 @@ export class AdminService {
   }
 
   // Students
-  getStudents(page: number = 1, size: number = 10): Observable<Result<PagedResult<Student>>> {
-    return this.http.get<Result<PagedResult<Student>>>(`${this.apiUrl}/students?pageNumber=${page}&pageSize=${size}`);
+  getStudents(page: number, size: number, searchTerm: string = ''): Observable<Result<PagedResult<Student>>> {
+    return this.http.get<Result<PagedResult<Student>>>(`${this.apiUrl}/students?pageNumber=${page}&pageSize=${size}&searchTerm=${searchTerm}`);
   }
 
   createStudent(student: any): Observable<Result<any>> {
