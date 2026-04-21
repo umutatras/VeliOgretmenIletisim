@@ -6,7 +6,11 @@ using VeliOgretmenIletisim.Domain.Entities;
 
 namespace VeliOgretmenIletisim.Application.Features.Users.Commands.ChangePassword;
 
-public record ChangePasswordCommand(string CurrentPassword, string NewPassword) : IRequest<Result>;
+public class ChangePasswordCommand : IRequest<Result>
+{
+    public string OldPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+}
 
 public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, Result>
 {
@@ -29,7 +33,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         if (user == null)
             return Result.Failure("User not found.");
 
-        var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
         
         if (!result.Succeeded)
             return Result.Failure(result.Errors.Select(e => e.Description).ToList());
