@@ -22,7 +22,7 @@
                         <select class="form-control form-select" [(ngModel)]="selectedAvailabilityId">
                             <option value="">Saat Dilimi Seçiniz...</option>
                             <option *ngFor="let a of allTeacherAvailabilities()" [value]="a.id" [disabled]="a.isFull">
-                                {{ a.teacherName }} | {{ a.startTime | date:'dd.MM HH:mm' }} - {{ a.endTime | date:'HH:mm' }} 
+                                [{{ a.isGroup ? 'GRUP' : 'BİREYSEL' }}] {{ a.teacherName }} | {{ a.startTime | date:'dd.MM HH:mm' }} - {{ a.endTime | date:'HH:mm' }} 
                                 ({{ a.currentCount }}/{{ a.maxCapacity }}) {{ a.isFull ? '- DOLU' : '' }}
                             </option>
                         </select>

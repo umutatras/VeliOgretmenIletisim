@@ -25,7 +25,7 @@ public class GetMyAvailabilitiesQueryHandler : IRequestHandler<GetMyAvailabiliti
             .GetAll()
             .FirstOrDefaultAsync(t => t.AppUserId == userId, cancellationToken);
 
-        if (teacher == null) return Result<List<TeacherAvailabilityDto>>.Failure("Öğretmen profili bulunamadı.");
+        if (teacher == null) return Result<List<TeacherAvailabilityDto>>.Failure($"Öğretmen profili bulunamadı. (UserId: {userId})");
 
         var availabilities = await _uow.GetRepository<Availability>()
             .GetAll()

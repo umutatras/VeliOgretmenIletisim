@@ -17,7 +17,8 @@ export class AvailabilitiesComponent implements OnInit {
   isLoading = signal(true);
 
   // Form Fields
-  newSlot = {
+  newSlot: any = {
+    id: undefined,
     startTime: '',
     endTime: '',
     maxCapacity: 1,
@@ -36,27 +37,33 @@ export class AvailabilitiesComponent implements OnInit {
       next: (res) => {
         if (res.isSuccess) {
           this.availabilities.set(res.data);
+        } else {
+          Swal.fire('Hata', res.message || 'Müsaitlikler yüklenemedi.', 'error');
         }
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: (err) => {
+        console.error('Availability Load Error:', err);
+        Swal.fire('Hata', 'Sunucuya bağlanırken bir sorun oluştu.', 'error');
+        this.isLoading.set(false);
+      }
     });
   }
 
   edit(item: Availability) {
     this.isEditing.set(true);
-    // Convert dates to local ISO format for datetime-local input
+    // Safe substring for datetime-local input
     this.newSlot = {
       ...item,
-      startTime: item.startTime.substring(0, 16),
-      endTime: item.endTime.substring(0, 16)
+      startTime: item.startTime ? item.startTime.substring(0, 16) : '',
+      endTime: item.endTime ? item.endTime.substring(0, 16) : ''
     };
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   cancelEdit() {
     this.isEditing.set(false);
-    this.newSlot = { startTime: '', endTime: '', maxCapacity: 1, isGroup: false };
+    this.newSlot = { id: undefined, startTime: '', endTime: '', maxCapacity: 1, isGroup: false };
   }
 
   save() {
@@ -65,17 +72,41 @@ export class AvailabilitiesComponent implements OnInit {
       return;
     }
 
-    const request = this.isEditing() 
-      ? this.appointmentService.updateAvailability(this.newSlot)
-      : this.appointmentService.createAvailability(this.newSlot);
+    // Convert to ISO for backend consistency
+    const payload = {
+      ...this.newSlot,
+      startTime: new Date(this.newSlot.startTime).toISOString(),
+      endTime: new Date(this.newSlot.endTime).toISOString()
+    };
 
-    request.subscribe(res => {
-      if (res.isSuccess) {
-        Swal.fire('Başarılı', this.isEditing() ? 'Müsaitlik güncellendi.' : 'Müsaitlik zamanı eklendi.', 'success');
-        this.cancelEdit();
-        this.loadMyAvailabilities();
-      } else {
-        Swal.fire('Hata', res.message, 'error');
+    if (this.isEditing() && !payload.id) {
+       Swal.fire('Hata', 'Güncellenecek kayıt ID\'si bulunamadı.', 'error');
+       return;
+    }
+
+    const request = this.isEditing() 
+      ? this.appointmentService.updateAvailability(payload)
+      : this.appointmentService.createAvailability(payload);
+
+    request.subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Başarılı',
+            text: this.isEditing() ? 'Müsaitlik güncellendi.' : 'Müsaitlik zamanı eklendi.',
+            timer: 1500,
+            showConfirmButton: false
+          });
+          this.cancelEdit();
+          this.loadMyAvailabilities();
+        } else {
+          Swal.fire('Hata', res.message, 'error');
+        }
+      },
+      error: (err) => {
+        console.error('Save Error:', err);
+        Swal.fire('Hata', 'İşlem başarısız oldu. Lütfen verileri kontrol edin.', 'error');
       }
     });
   }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using VeliOgretmenIletisim.Application.Common.Models;
 using VeliOgretmenIletisim.Application.Interfaces.Repositories;
 using VeliOgretmenIletisim.Application.Interfaces.Security;
+using VeliOgretmenIletisim.Application.Interfaces.Notifications;
 using VeliOgretmenIletisim.Domain.Entities;
 
 namespace VeliOgretmenIletisim.Application.Features.Appointments.Commands.UpdateAppointmentStatus;
@@ -11,11 +12,13 @@ public class UpdateAppointmentStatusCommandHandler : IRequestHandler<UpdateAppoi
 {
     private readonly IUnitOfWork _uow;
     private readonly ICurrentUserService _currentUserService;
+    private readonly INotificationService _notificationService;
 
-    public UpdateAppointmentStatusCommandHandler(IUnitOfWork uow, ICurrentUserService currentUserService)
+    public UpdateAppointmentStatusCommandHandler(IUnitOfWork uow, ICurrentUserService currentUserService, INotificationService notificationService)
     {
         _uow = uow;
         _currentUserService = currentUserService;
+        _notificationService = notificationService;
     }
 
     public async Task<Result> Handle(UpdateAppointmentStatusCommand request, CancellationToken cancellationToken)
@@ -45,6 +48,14 @@ public class UpdateAppointmentStatusCommandHandler : IRequestHandler<UpdateAppoi
         appointment.TeacherNote = request.TeacherNote;
 
         await _uow.SaveChangesAsync(cancellationToken);
+
+        // Notify Parent
+        var parent = await _uow.GetRepository<Parent>().GetAll().FirstOrDefaultAsync(p => p.Id == appointment.ParentId);
+        if (parent != null)
+        {
+            var statusTextNotif = request.Status == Domain.Enums.AppointmentStatus.Approved ? "Onaylandı" : "Reddedildi";
+            await _notificationService.SendToUserAsync(parent.AppUserId, $"Randevunuz {statusTextNotif}.", "AppointmentStatusChanged");
+        }
 
         var statusText = request.Status == Domain.Enums.AppointmentStatus.Approved ? "onaylandı" : "reddedildi";
         return Result.Success($"Randevu başarıyla {statusText}.");
