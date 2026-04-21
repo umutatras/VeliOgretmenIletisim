@@ -105,4 +105,14 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
+
+  getProfileImageUrl(): string {
+    const path = this.profile()?.profilePicturePath;
+    let finalPath = path;
+    if (finalPath && finalPath.startsWith('wwwroot')) {
+      finalPath = finalPath.replace('wwwroot', '');
+    }
+    
+    return finalPath ? `https://localhost:7273${finalPath}` : 'assets/images/users/8.jpg';
+  }
 }

@@ -16,7 +16,7 @@
             </div>
             <div class="card-body text-center">
                 <div class="mb-4">
-                    <img [src]="profile()?.profilePicturePath || 'assets/images/users/8.jpg'" alt="profile-user" class="avatar avatar-xxl brround">
+                    <img [src]="getProfileImageUrl()" alt="profile-user" class="avatar avatar-xxl brround cover-image">
                     <div class="mt-2">
                         <label class="btn btn-sm btn-primary">
                             <i class="fe fe-camera me-1"></i> Fotoğraf Değiştir
