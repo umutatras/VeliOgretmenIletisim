@@ -1,9 +1,9 @@
 <div class="page-header">
-    <h1 class="page-title">Öğrenci Yönetimi</h1>
+    <h1 class="page-title">Öğrencilerim</h1>
     <div>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="javascript:void(0);">Yönetim</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Öğrenciler</li>
+            <li class="breadcrumb-item"><a href="javascript:void(0);">İletişim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Öğrencilerim</li>
         </ol>
     </div>
 </div>
@@ -12,7 +12,7 @@
     <div class="col-md-12 col-xl-4">
         <div class="card">
             <div class="card-header border-bottom">
-                <h3 class="card-title">{{ isEditing() ? 'Öğrenci Güncelle' : 'Yeni Öğrenci Ekle & Ata' }}</h3>
+                <h3 class="card-title">{{ isEditing() ? 'Öğrenci Güncelle' : 'Yeni Öğrenci Ekle' }}</h3>
             </div>
             <div class="card-body">
                 <div class="form-group">
@@ -36,15 +36,6 @@
                         }
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Öğretmen Seçimi (Opsiyonel)</label>
-                    <select class="form-control form-select" [(ngModel)]="newStudent.teacherId">
-                        <option [value]="null">Öğretmen Atanmasın</option>
-                        @for (t of teachers(); track t.id) {
-                            <option [value]="t.id">{{ t.fullName }} ({{ t.email }})</option>
-                        }
-                    </select>
-                </div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-primary flex-fill mt-3" (click)="saveStudent()">
                         <i class="fe fe-save me-1"></i> {{ isEditing() ? 'Güncelle' : 'Öğrenciyi Kaydet' }}
@@ -60,7 +51,7 @@
     <div class="col-md-12 col-xl-8">
         <div class="card">
             <div class="card-header border-bottom">
-                <h3 class="card-title">Kayıtlı Öğrenciler</h3>
+                <h3 class="card-title">Sınıf Listem</h3>
             </div>
             <div class="card-body">
                 @if (isLoading()) {
@@ -73,7 +64,6 @@
                                     <th>No</th>
                                     <th>Öğrenci</th>
                                     <th>Veli</th>
-                                    <th>Öğretmen</th>
                                     <th class="text-center">İşlem</th>
                                 </tr>
                             </thead>
@@ -83,13 +73,6 @@
                                         <td>{{ s.studentNumber }}</td>
                                         <td class="fw-bold">{{ s.firstName }} {{ s.lastName }}</td>
                                         <td>{{ s.parentName }}</td>
-                                        <td>
-                                            @if (s.teacherName) {
-                                                <span class="badge bg-primary-transparent text-primary">{{ s.teacherName }}</span>
-                                            } @else {
-                                                <span class="badge bg-danger-transparent text-danger">Atanmamış</span>
-                                            }
-                                        </td>
                                         <td class="text-center">
                                             <button (click)="editStudent(s)" class="btn btn-sm btn-outline-primary btn-icon me-2">
                                                 <i class="fe fe-edit"></i>
@@ -98,6 +81,11 @@
                                                 <i class="fe fe-trash"></i>
                                             </button>
                                         </td>
+                                    </tr>
+                                }
+                                @if (students().length === 0) {
+                                    <tr>
+                                        <td colspan="4" class="text-center p-5 text-muted">Henüz öğrenci eklenmemiş.</td>
                                     </tr>
                                 }
                             </tbody>

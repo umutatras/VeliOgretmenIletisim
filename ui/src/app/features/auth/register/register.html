@@ -1,0 +1,84 @@
+<div class="login-img">
+    <div class="page">
+        <div class="">
+            <div class="col col-login mx-auto">
+                <div class="text-center">
+                    <h2 class="text-primary fw-bold">SCHOOL CONNECT</h2>
+                </div>
+            </div>
+            <div class="container-login100">
+                <div class="wrap-login100 p-6" style="width: 500px;">
+                    <form class="login100-form validate-form" (ngSubmit)="register()">
+                        <span class="login100-form-title">
+                            Kayıt Ol
+                        </span>
+
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="wrap-input100 validate-input">
+                                    <input class="input100" type="text" name="firstName" placeholder="Ad" [(ngModel)]="registerForm.firstName">
+                                    <span class="focus-input100"></span>
+                                    <span class="symbol-input100">
+                                        <i class="zmdi zmdi-account" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="wrap-input100 validate-input">
+                                    <input class="input100" type="text" name="lastName" placeholder="Soyad" [(ngModel)]="registerForm.lastName">
+                                    <span class="focus-input100"></span>
+                                    <span class="symbol-input100">
+                                        <i class="zmdi zmdi-account" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="wrap-input100 validate-input">
+                            <input class="input100" type="email" name="email" placeholder="E-posta Adresi" [(ngModel)]="registerForm.email">
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="zmdi zmdi-email" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        <div class="wrap-input100 validate-input">
+                            <input class="input100" type="password" name="password" placeholder="Şifre" [(ngModel)]="registerForm.password">
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="zmdi zmdi-lock" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="form-label text-muted ms-1 mb-2">Üyelik Türü</label>
+                            <div class="d-flex gap-3">
+                                <label class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="role" [value]="2" [(ngModel)]="registerForm.role">
+                                    <span class="custom-control-label">Öğretmen</span>
+                                </label>
+                                <label class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="role" [value]="3" [(ngModel)]="registerForm.role">
+                                    <span class="custom-control-label">Veli</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="container-login100-form-btn">
+                            <button type="submit" [disabled]="isLoading()" class="login100-form-btn btn-primary">
+                                @if (isLoading()) {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                }
+                                Kayıt Ol
+                            </button>
+                        </div>
+
+                        <div class="text-center pt-3">
+                            <p class="mb-0">Zaten bir hesabınız var mı?<a routerLink="/auth/login" class="text-primary ms-1">Giriş Yap</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -66,6 +66,14 @@ export class AdminService {
     return this.http.post<Result<any>>(`${this.apiUrl}/students`, student);
   }
 
+  deleteStudent(id: string): Observable<Result<any>> {
+    return this.http.delete<Result<any>>(`${this.apiUrl}/students/${id}`);
+  }
+
+  updateStudent(student: any): Observable<Result<any>> {
+    return this.http.put<Result<any>>(`${this.apiUrl}/students`, student);
+  }
+
   // Users
   getUsersByRole(role: string): Observable<Result<UserBrief[]>> {
     return this.http.get<Result<UserBrief[]>>(`${this.apiUrl}/users-by-role/${role}`);
@@ -74,5 +82,14 @@ export class AdminService {
   // Audit Logs
   getAuditLogs(page: number = 1, size: number = 20): Observable<Result<PagedResult<AuditLog>>> {
     return this.http.get<Result<PagedResult<AuditLog>>>(`${this.apiUrl}/audit-logs?pageNumber=${page}&pageSize=${size}`);
+  }
+
+  // Approvals
+  getPendingApprovals(): Observable<Result<any[]>> {
+    return this.http.get<Result<any[]>>(`${this.apiUrl}/pending-approvals`);
+  }
+
+  approveUser(userId: string): Observable<Result<any>> {
+    return this.http.post<Result<any>>(`${this.apiUrl}/approve-user`, { userId });
   }
 }

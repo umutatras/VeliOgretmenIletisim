@@ -58,6 +58,10 @@ export class AuthService {
     }
   }
 
+  register(command: any) {
+    return this.http.post<{ isSuccess: boolean, message: string }>(`${this.apiUrl}/register`, command);
+  }
+
   logout() {
     this.token.set(null);
     this.currentUser.set(null);

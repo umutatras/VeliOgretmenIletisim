@@ -6,6 +6,8 @@ using VeliOgretmenIletisim.Application.Features.Availabilities.Commands.UpdateAv
 using VeliOgretmenIletisim.Application.Features.Availabilities.Commands.DeleteAvailability;
 using VeliOgretmenIletisim.Application.Features.MeetingNotes.Commands.CreateMeetingNote;
 using VeliOgretmenIletisim.Application.Features.Students.Commands.TeacherAddStudent;
+using VeliOgretmenIletisim.Application.Features.Students.Commands.DeleteStudent;
+using VeliOgretmenIletisim.Application.Features.Students.Commands.UpdateStudent;
 using VeliOgretmenIletisim.Application.Features.Teachers.Queries.GetMyStudentsForTeacher;
 
 namespace VeliOgretmenIletisim.WebAPI.Controllers;
@@ -57,6 +59,18 @@ public class TeachersController : BaseApiController
 
     [HttpPost("students")]
     public async Task<IActionResult> AddStudent([FromBody] TeacherAddStudentCommand command)
+    {
+        return HandleResult(await Mediator.Send(command));
+    }
+
+    [HttpDelete("students/{id}")]
+    public async Task<IActionResult> DeleteStudent(Guid id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteStudentCommand(id)));
+    }
+
+    [HttpPut("students")]
+    public async Task<IActionResult> UpdateStudent([FromBody] UpdateStudentCommand command)
     {
         return HandleResult(await Mediator.Send(command));
     }

@@ -19,16 +19,18 @@ export class StudentsComponent implements OnInit {
   totalPages = signal(1);
 
   // Form Data
-  newStudent = {
+  newStudent: any = {
     firstName: '',
     lastName: '',
     studentNumber: '',
-    parentId: '',
-    teacherId: ''
+    parentId: null,
+    teacherId: null
   };
 
   parents = signal<UserBrief[]>([]);
   teachers = signal<UserBrief[]>([]);
+
+  isEditing = signal(false);
 
   ngOnInit() {
     this.loadStudents();
@@ -51,8 +53,6 @@ export class StudentsComponent implements OnInit {
   }
 
   loadSelectionLists() {
-    // Role enum on backend: Teacher = 1, Parent = 2 (Assuming based on common patterns, let's check or use string if possible)
-    // Actually, our API takes the Enum string or int. Let's use strings if the enum is string-backed or try 'Teacher'
     this.adminService.getUsersByRole('Teacher').subscribe(res => {
       if (res.isSuccess) this.teachers.set(res.data);
     });
@@ -62,30 +62,67 @@ export class StudentsComponent implements OnInit {
     });
   }
 
+  editStudent(s: any) {
+    this.isEditing.set(true);
+    this.newStudent = {
+      ...s,
+      parentId: s.parentId || null,
+      teacherId: s.teacherId || null
+    };
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   saveStudent() {
-    if (!this.newStudent.firstName || !this.newStudent.parentId || !this.newStudent.teacherId) {
-      Swal.fire('Uyarı', 'Lütfen öğrenci bilgilerini, veliyi ve öğretmeni seçin.', 'warning');
+    if (!this.newStudent.firstName || !this.newStudent.parentId) {
+      Swal.fire('Uyarı', 'Lütfen ad ve veli bilgilerini doldurun.', 'warning');
       return;
     }
 
-    this.adminService.createStudent(this.newStudent).subscribe(res => {
+    const request = this.isEditing() 
+      ? this.adminService.updateStudent(this.newStudent)
+      : this.adminService.createStudent(this.newStudent);
+
+    request.subscribe(res => {
       if (res.isSuccess) {
-        Swal.fire('Başarılı', 'Öğrenci başarıyla eklendi ve atamaları yapıldı.', 'success');
+        Swal.fire('Başarılı', this.isEditing() ? 'Öğrenci güncellendi.' : 'Öğrenci eklendi.', 'success');
         this.resetForm();
-        this.loadStudents();
+        this.loadStudents(this.currentPage());
       } else {
-        Swal.fire('Hata', res.message || 'Öğrenci eklenirken bir hata oluştu.', 'error');
+        Swal.fire('Hata', res.message, 'error');
       }
     });
   }
 
   resetForm() {
+    this.isEditing.set(false);
     this.newStudent = {
       firstName: '',
       lastName: '',
       studentNumber: '',
-      parentId: '',
-      teacherId: ''
+      parentId: null,
+      teacherId: null
     };
+  }
+
+  deleteStudent(id: string) {
+    Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu öğrenci kaydı kalıcı olarak silinecektir!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Evet, Sil',
+      cancelButtonText: 'Vazgeç'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService.deleteStudent(id).subscribe(res => {
+          if (res.isSuccess) {
+            Swal.fire('Başarılı', 'Öğrenci silindi.', 'success');
+            this.loadStudents(this.currentPage());
+          } else {
+            Swal.fire('Hata', res.message, 'error');
+          }
+        });
+      }
+    });
   }
 }

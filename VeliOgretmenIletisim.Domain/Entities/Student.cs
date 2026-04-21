@@ -11,8 +11,8 @@ public class Student : BaseEntity, IAuditEntity, ISoftDelete
     public Guid ParentId { get; set; }
     public Parent Parent { get; set; } = null!;
 
-    public Guid TeacherId { get; set; }
-    public Teacher Teacher { get; set; } = null!;
+    public Guid? TeacherId { get; set; }
+    public Teacher? Teacher { get; set; }
 
     // IAuditEntity
     public DateTime CreatedDate { get; set; }

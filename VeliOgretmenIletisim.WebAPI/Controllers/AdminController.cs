@@ -5,9 +5,12 @@ using VeliOgretmenIletisim.Application.Features.Departments.Commands.CreateDepar
 using VeliOgretmenIletisim.Application.Features.Departments.Commands.DeleteDepartment;
 using VeliOgretmenIletisim.Application.Features.Departments.Queries.GetAllDepartments;
 using VeliOgretmenIletisim.Application.Features.Students.Commands.AdminAddStudent;
+using VeliOgretmenIletisim.Application.Features.Students.Commands.DeleteStudent;
+using VeliOgretmenIletisim.Application.Features.Students.Commands.UpdateStudent;
 using VeliOgretmenIletisim.Application.Features.Students.Queries.GetAllStudents;
 using VeliOgretmenIletisim.Application.Features.Teachers.Commands.AssignDepartment;
 using VeliOgretmenIletisim.Application.Features.Admin.Queries.GetUsersByRole;
+using VeliOgretmenIletisim.Application.Features.Admin.Queries.GetPendingApprovals;
 using VeliOgretmenIletisim.Domain.Enums;
 
 namespace VeliOgretmenIletisim.WebAPI.Controllers;
@@ -19,6 +22,12 @@ public class AdminController : BaseApiController
     public async Task<IActionResult> ApproveUser([FromBody] ApproveUserCommand command)
     {
         return HandleResult(await Mediator.Send(command));
+    }
+
+    [HttpGet("pending-approvals")]
+    public async Task<IActionResult> GetPendingApprovals()
+    {
+        return HandleResult(await Mediator.Send(new GetPendingApprovalsQuery()));
     }
 
     [HttpPost("change-role")]
@@ -61,6 +70,18 @@ public class AdminController : BaseApiController
 
     [HttpPost("students")]
     public async Task<IActionResult> AddStudent([FromBody] AdminAddStudentCommand command)
+    {
+        return HandleResult(await Mediator.Send(command));
+    }
+
+    [HttpDelete("students/{id}")]
+    public async Task<IActionResult> DeleteStudent(Guid id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteStudentCommand(id)));
+    }
+
+    [HttpPut("students")]
+    public async Task<IActionResult> UpdateStudent([FromBody] UpdateStudentCommand command)
     {
         return HandleResult(await Mediator.Send(command));
     }

@@ -38,7 +38,7 @@ public class GetMyStudentsQueryHandler : IRequestHandler<GetMyStudentsQuery, Res
             $"{c.FirstName} {c.LastName}",
             c.StudentNumber,
             c.TeacherId,
-            c.Teacher?.AppUser?.FullName ?? "Atanmamış"
+            c.Teacher != null ? $"{c.Teacher.AppUser.FirstName} {c.Teacher.AppUser.LastName}" : "Atanmamış"
         )).ToList();
 
         return Result<List<MyStudentDto>>.Success(children);

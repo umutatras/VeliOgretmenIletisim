@@ -1,0 +1,77 @@
+<div class="page-header">
+    <h1 class="page-title">Kullanıcı Onayları</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Yönetim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Kullanıcı Onayları</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Onay Bekleyen Üyelikler</h3>
+                <button class="btn btn-sm btn-light" (click)="loadPendingUsers()">
+                    <i class="fe fe-refresh-cw me-1"></i> Yenile
+                </button>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-nowrap border-bottom">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Ad Soyad</th>
+                                    <th>E-posta</th>
+                                    <th>Rol</th>
+                                    <th>Kayıt Tarihi</th>
+                                    <th class="text-center">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (u of pendingUsers(); track u.id) {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar avatar-sm brround bg-primary-transparent text-primary me-2">
+                                                    {{ u.firstName[0] }}{{ u.lastName[0] }}
+                                                </div>
+                                                <span class="fw-semibold">{{ u.firstName }} {{ u.lastName }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ u.email }}</td>
+                                        <td>
+                                            <span class="badge" [ngClass]="u.role === 'Teacher' ? 'bg-info' : 'bg-success'">
+                                                {{ u.role === 'Teacher' ? 'Öğretmen' : 'Veli' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ u.createdDate | date:'dd.MM.yyyy HH:mm' }}</td>
+                                        <td class="text-center">
+                                            <button class="btn btn-sm btn-success" (click)="approve(u.id)">
+                                                <i class="fe fe-check me-1"></i> Onayla
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (pendingUsers().length === 0) {
+                                    <tr>
+                                        <td colspan="5" class="text-center p-5 text-muted">
+                                            <i class="fe fe-user-check fs-50 mb-3 d-block"></i>
+                                            Onay bekleyen kullanıcı bulunmamaktadır.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

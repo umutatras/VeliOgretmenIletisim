@@ -25,10 +25,14 @@ public class AdminAddStudentCommandHandler : IRequestHandler<AdminAddStudentComm
             .Include(p => p.AppUser)
             .FirstOrDefaultAsync(p => p.Id == request.ParentId, cancellationToken);
 
-        var teacher = await _uow.GetRepository<Teacher>().GetByIdAsync(request.TeacherId);
+        if (parent == null)
+            return Result<Guid>.Failure("Veli bulunamadı.");
 
-        if (parent == null || teacher == null)
-            return Result<Guid>.Failure("Parent or Teacher not found.");
+        if (request.TeacherId.HasValue)
+        {
+            var teacher = await _uow.GetRepository<Teacher>().GetByIdAsync(request.TeacherId.Value);
+            if (teacher == null) return Result<Guid>.Failure("Öğretmen bulunamadı.");
+        }
 
         var student = new Student
         {

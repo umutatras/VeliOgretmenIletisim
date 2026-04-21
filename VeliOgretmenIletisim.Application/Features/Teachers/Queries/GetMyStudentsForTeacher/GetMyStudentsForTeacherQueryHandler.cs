@@ -36,7 +36,8 @@ public class GetMyStudentsForTeacherQueryHandler : IRequestHandler<GetMyStudents
             .Where(s => s.TeacherId == teacher.Id)
             .Select(s => new TeacherStudentDto(
                 s.Id,
-                $"{s.FirstName} {s.LastName}",
+                s.FirstName,
+                s.LastName,
                 s.StudentNumber,
                 s.ParentId,
                 $"{s.Parent.AppUser.FirstName} {s.Parent.AppUser.LastName}"

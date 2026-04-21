@@ -14,6 +14,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
   },
   {
+    path: 'auth/register',
+    loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
+  },
+  {
     path: '',
     component: ShellComponent,
     canActivate: [authGuard],
@@ -53,6 +57,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/availabilities/availabilities.component').then(m => m.AvailabilitiesComponent)
       },
       {
+        path: 'teacher/students',
+        canActivate: [roleGuard],
+        data: { roles: ['Teacher'] },
+        loadComponent: () => import('./features/teacher-students/teacher-students.component').then(m => m.TeacherStudentsComponent)
+      },
+      {
         path: 'admin/departments',
         canActivate: [roleGuard],
         data: { roles: ['Admin'] },
@@ -69,6 +79,12 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['Admin'] },
         loadComponent: () => import('./features/admin/audit-logs/audit-logs.component').then(m => m.AuditLogsComponent)
+      },
+      {
+        path: 'admin/user-approval',
+        canActivate: [roleGuard],
+        data: { roles: ['Admin'] },
+        loadComponent: () => import('./features/admin/user-approval/user-approval.component').then(m => m.UserApprovalComponent)
       }
     ]
   }
