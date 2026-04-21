@@ -13,18 +13,18 @@ public class SignalRNotificationService : INotificationService
         _hubContext = hubContext;
     }
 
-    public async Task SendToUserAsync(Guid userId, string message, string type = "Information")
+    public async Task SendToUserAsync(Guid userId, string message, string type = "Bilgi")
     {
-        await _hubContext.Clients.Group(userId.ToString()).SendAsync("ReceiveNotification", new { message, type });
+        await _hubContext.Clients.Group(userId.ToString()).SendAsync("ReceiveNotification", type, message);
     }
 
-    public async Task SendToAllAsync(string message, string type = "Information")
+    public async Task SendToAllAsync(string message, string type = "Bilgi")
     {
-        await _hubContext.Clients.All.SendAsync("ReceiveNotification", new { message, type });
+        await _hubContext.Clients.All.SendAsync("ReceiveNotification", type, message);
     }
 
-    public async Task SendToRoleAsync(string role, string message, string type = "Information")
+    public async Task SendToRoleAsync(string role, string message, string type = "Bilgi")
     {
-        await _hubContext.Clients.Group(role).SendAsync("ReceiveNotification", new { message, type });
+        await _hubContext.Clients.Group(role).SendAsync("ReceiveNotification", type, message);
     }
 }

@@ -9,6 +9,12 @@ namespace VeliOgretmenIletisim.WebAPI.Controllers;
 [Authorize(Roles = "Teacher")]
 public class TeachersController : BaseApiController
 {
+    [HttpGet("my-availabilities")]
+    public async Task<IActionResult> GetMyAvailabilities()
+    {
+        return HandleResult(await Mediator.Send(new VeliOgretmenIletisim.Application.Features.Teachers.Queries.GetMyAvailabilities.GetMyAvailabilitiesQuery()));
+    }
+
     [HttpPost("announcements")]
     public async Task<IActionResult> CreateAnnouncement([FromBody] CreateAnnouncementCommand command)
     {

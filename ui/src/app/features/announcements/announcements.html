@@ -1,93 +1,88 @@
 <div class="page-header">
-    <h1 class="page-title">Duyuru Yönetimi</h1>
+    <h1 class="page-title">Duyurular</h1>
     <div>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="javascript:void(0);">Genel</a></li>
+            <li class="breadcrumb-item"><a href="javascript:void(0);">İletişim</a></li>
             <li class="breadcrumb-item active" aria-current="page">Duyurular</li>
         </ol>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-12 col-xl-4">
-        <div class="card">
-            <div class="card-header border-bottom">
-                <h3 class="card-title">Yeni Duyuru Oluştur</h3>
-            </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <label class="form-label">Başlık</label>
-                    <input type="text" class="form-control" [(ngModel)]="title" placeholder="Duyuru başlığını giriniz...">
+    <!-- Announcement Create Form (Only for Admin & Teacher) -->
+    @if (currentUser()?.role === 'Admin' || currentUser()?.role === 'Teacher') {
+        <div class="col-md-12 col-xl-4">
+            <div class="card">
+                <div class="card-header border-bottom">
+                    <h3 class="card-title">Yeni Duyuru Yayınla</h3>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">İçerik</label>
-                    <textarea class="form-control" rows="5" [(ngModel)]="content" placeholder="Duyuru içeriğini giriniz..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Dosya Eki (Opsiyonel)</label>
-                    <input type="file" class="form-control" (change)="onFileChange($event)">
-                    @if (isUploading()) {
-                        <small class="text-primary mt-1 d-block">Dosya yükleniyor...</small>
-                    }
-                </div>
-                <div class="mt-4">
-                    <button class="btn btn-primary w-100" (click)="create()">
-                        <i class="fe fe-plus me-2"></i> Yayınla
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Duyuru Başlığı</label>
+                        <input type="text" class="form-control" [(ngModel)]="newAnnouncement.title" placeholder="Haber başlığını girin...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">İçerik</label>
+                        <textarea class="form-control" rows="5" [(ngModel)]="newAnnouncement.content" placeholder="Duyuru detaylarını buraya yazın..."></textarea>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label class="custom-control custom-checkbox mb-0">
+                            <input type="checkbox" class="custom-control-input" [(ngModel)]="newAnnouncement.isGeneral">
+                            <span class="custom-control-label">Genel Duyuru (Tüm Okul)</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-4" (click)="save()">
+                        <i class="fe fe-send me-1"></i> Yayınla
                     </button>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-12 col-xl-8">
+    }
+
+    <!-- Announcement List -->
+    <div [class]="(currentUser()?.role === 'Admin' || currentUser()?.role === 'Teacher') ? 'col-md-12 col-xl-8' : 'col-md-12'">
         <div class="card">
             <div class="card-header border-bottom">
-                <h3 class="card-title">Yayınlanmış Duyurular</h3>
+                <h3 class="card-title">Güncel Duyurular</h3>
             </div>
             <div class="card-body">
                 @if (isLoading()) {
-                    <div class="text-center p-5">
-                        <div class="spinner-border text-primary" role="status"></div>
-                    </div>
+                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
                 } @else {
-                    <div class="table-responsive">
-                        <table class="table table-bordered text-nowrap border-bottom">
-                            <thead>
-                                <tr>
-                                    <th>Başlık</th>
-                                    <th>Tarih</th>
-                                    <th>İşlemler</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (item of announcements(); track item.id) {
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold">{{ item.title }}</h6>
-                                                    <p class="text-muted mb-0 fs-12">{{ item.content | slice:0:50 }}...</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>{{ item.createdDate | date:'short' }}</td>
-                                        <td>
-                                            <div class="btn-list">
-                                                @if (item.attachmentPath) {
-                                                    <a [href]="'http://localhost:5066' + item.attachmentPath" target="_blank" class="btn btn-sm btn-icon btn-info">
-                                                        <i class="fe fe-download"></i>
-                                                    </a>
-                                                }
-                                                <button (click)="delete(item.id)" class="btn btn-sm btn-icon btn-danger">
-                                                    <i class="fe fe-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                    @for (ann of announcements(); track ann.id) {
+                        <div class="p-4 border br-7 mb-4 bg-light shadow-sm position-relative">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-3">
+                                    <span class="avatar avatar-md brround bg-primary-transparent text-primary">
+                                        <i class="fe fe-megaphone"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold text-primary">{{ ann.title }}</h5>
+                                    <small class="text-muted"><i class="fe fe-calendar me-1"></i>{{ ann.createdDate | date:'dd MMMM yyyy HH:mm' }}</small>
+                                </div>
+                                
+                                @if (currentUser()?.role === 'Admin' || currentUser()?.role === 'Teacher') {
+                                    <div class="ms-auto">
+                                        <button class="btn btn-sm btn-icon btn-outline-danger" (click)="delete(ann.id)">
+                                            <i class="fe fe-trash"></i>
+                                        </button>
+                                    </div>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
+                            </div>
+                            <p class="text-dark mt-3 mb-0">{{ ann.content }}</p>
+                            @if (ann.isGeneral) {
+                                <span class="badge bg-info-transparent text-info mt-2">Genel Duyuru</span>
+                            }
+                        </div>
+                    }
+                    
+                    @if (announcements().length === 0) {
+                        <div class="text-center p-5 text-muted">
+                            <i class="fe fe-Inbox fs-50 d-block mb-3"></i>
+                            Henüz yayınlanmış bir duyuru bulunmuyor.
+                        </div>
+                    }
                 }
             </div>
         </div>

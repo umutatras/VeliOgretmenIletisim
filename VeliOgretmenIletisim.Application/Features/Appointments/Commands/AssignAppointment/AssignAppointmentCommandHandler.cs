@@ -11,56 +11,53 @@ namespace VeliOgretmenIletisim.Application.Features.Appointments.Commands.Assign
 public class AssignAppointmentCommandHandler : IRequestHandler<AssignAppointmentCommand, Result>
 {
     private readonly IUnitOfWork _uow;
-    private readonly INotificationDispatcher _notificationDispatcher;
+    private readonly INotificationService _notificationService;
 
-    public AssignAppointmentCommandHandler(IUnitOfWork uow, INotificationDispatcher notificationDispatcher)
+    public AssignAppointmentCommandHandler(IUnitOfWork uow, INotificationService notificationService)
     {
         _uow = uow;
-        _notificationDispatcher = notificationDispatcher;
+        _notificationService = notificationService;
     }
 
     public async Task<Result> Handle(AssignAppointmentCommand request, CancellationToken cancellationToken)
     {
-        var availability = await _uow.GetRepository<Availability>().GetByIdAsync(request.AvailabilityId);
-        var parent = await _uow.GetRepository<Parent>()
+        var availability = await _uow.GetRepository<Availability>()
             .GetAll()
-            .Include(x => x.AppUser)
-            .FirstOrDefaultAsync(x => x.Id == request.ParentId, cancellationToken);
+            .Include(a => a.Teacher)
+            .ThenInclude(t => t.AppUser)
+            .FirstOrDefaultAsync(a => a.Id == request.AvailabilityId, cancellationToken);
 
-        if (availability == null || parent == null)
-            return Result.Failure("Availability or Parent not found.");
+        var student = await _uow.GetRepository<Student>()
+            .GetAll()
+            .Include(s => s.Parent)
+            .ThenInclude(p => p.AppUser)
+            .FirstOrDefaultAsync(s => s.Id == request.StudentId, cancellationToken);
 
-        // Kapasite kontrolü
+        if (availability == null || student == null)
+            return Result.Failure("Müsaitlik veya Öğrenci bulunamadı.");
+
         var currentAppointments = await _uow.GetRepository<Appointment>()
             .Where(x => x.AvailabilityId == request.AvailabilityId && x.Status != AppointmentStatus.Cancelled)
             .CountAsync(cancellationToken);
 
         if (currentAppointments >= availability.MaxCapacity)
-            return Result.Failure("This slot is full.");
+            return Result.Failure("Bu zaman dilimi dolmuştur.");
 
         var appointment = new Appointment
         {
             AvailabilityId = request.AvailabilityId,
-            ParentId = request.ParentId,
-            Status = AppointmentStatus.Approved
+            ParentId = student.ParentId,
+            StudentId = request.StudentId,
+            Status = AppointmentStatus.Pending,
+            Note = request.Note
         };
 
         await _uow.GetRepository<Appointment>().AddAsync(appointment);
         await _uow.SaveChangesAsync(cancellationToken);
 
-        // Background Job Dispatching
-        _notificationDispatcher.ScheduleEmail(
-            parent.AppUser.Email,
-            "New Appointment Assigned",
-            $"You have a new appointment on {availability.StartTime:dd/MM/yyyy HH:mm}");
+        await _notificationService.SendToUserAsync(availability.Teacher.AppUserId, 
+            $"Yeni bir randevu talebi var: {student.FirstName} {student.LastName} - {availability.StartTime:dd/MM/yyyy HH:mm}", "Randevu");
 
-        if (!string.IsNullOrEmpty(parent.AppUser.PhoneNumber))
-        {
-            _notificationDispatcher.ScheduleSms(
-                parent.AppUser.PhoneNumber,
-                $"Appointment assigned: {availability.StartTime}");
-        }
-
-        return Result.Success("Appointment assigned and notifications scheduled.");
+        return Result.Success("Randevu başarıyla oluşturuldu.");
     }
 }

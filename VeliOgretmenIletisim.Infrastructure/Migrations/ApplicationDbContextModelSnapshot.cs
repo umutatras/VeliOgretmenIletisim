@@ -324,11 +324,17 @@ namespace VeliOgretmenIletisim.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("StudentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TeacherId")
                         .HasColumnType("uniqueidentifier");
@@ -347,6 +353,8 @@ namespace VeliOgretmenIletisim.Infrastructure.Migrations
                     b.HasIndex("AvailabilityId");
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("StudentId");
 
                     b.HasIndex("TeacherId");
 
@@ -777,6 +785,10 @@ namespace VeliOgretmenIletisim.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("VeliOgretmenIletisim.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
                     b.HasOne("VeliOgretmenIletisim.Domain.Entities.Teacher", null)
                         .WithMany("Appointments")
                         .HasForeignKey("TeacherId");
@@ -784,6 +796,8 @@ namespace VeliOgretmenIletisim.Infrastructure.Migrations
                     b.Navigation("Availability");
 
                     b.Navigation("Parent");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("VeliOgretmenIletisim.Domain.Entities.Availability", b =>

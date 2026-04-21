@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService, AuditLog } from '../../../core/services/admin.service';
 
@@ -9,12 +9,12 @@ import { AdminService, AuditLog } from '../../../core/services/admin.service';
   templateUrl: './audit-logs.html'
 })
 export class AuditLogsComponent implements OnInit {
+  private adminService = inject(AdminService);
+
   logs = signal<AuditLog[]>([]);
   isLoading = signal(true);
   currentPage = signal(1);
   totalPages = signal(1);
-
-  constructor(private adminService: AdminService) {}
 
   ngOnInit() {
     this.loadLogs();
@@ -35,9 +35,20 @@ export class AuditLogsComponent implements OnInit {
     });
   }
 
-  getStatusCodeClass(code: number) {
-    if (code >= 200 && code < 300) return 'text-green-600 bg-green-50';
-    if (code >= 400) return 'text-red-600 bg-red-50';
-    return 'text-amber-600 bg-amber-50';
+  getStatusCodeBadgeClass(code: number): string {
+    if (code >= 200 && code < 300) return 'bg-success';
+    if (code >= 400 && code < 500) return 'bg-warning';
+    if (code >= 500) return 'bg-danger';
+    return 'bg-info';
+  }
+
+  getMethodBadgeClass(method: string): string {
+    switch (method.toUpperCase()) {
+      case 'GET': return 'bg-primary-transparent text-primary';
+      case 'POST': return 'bg-success-transparent text-success' ;
+      case 'PUT': return 'bg-info-transparent text-info';
+      case 'DELETE': return 'bg-danger-transparent text-danger';
+      default: return 'bg-light text-dark';
+    }
   }
 }

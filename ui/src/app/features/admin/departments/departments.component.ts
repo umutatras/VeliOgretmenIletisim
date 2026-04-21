@@ -1,7 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminService, Department } from '../../../core/services/admin.service';
+import { DepartmentService, Department } from '../../../core/services/department.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-departments',
@@ -10,14 +11,16 @@ import { AdminService, Department } from '../../../core/services/admin.service';
   templateUrl: './departments.html'
 })
 export class DepartmentsComponent implements OnInit {
+  private deptService = inject(DepartmentService);
+
   departments = signal<Department[]>([]);
-  
-  // Regular string for ngModel
-  newDeptName = '';
-  
   isLoading = signal(true);
 
-  constructor(private adminService: AdminService) {}
+  // New Dept Form
+  newDept = {
+    name: '',
+    description: ''
+  };
 
   ngOnInit() {
     this.loadDepartments();
@@ -25,7 +28,7 @@ export class DepartmentsComponent implements OnInit {
 
   loadDepartments() {
     this.isLoading.set(true);
-    this.adminService.getDepartments().subscribe({
+    this.deptService.getDepartments().subscribe({
       next: (res) => {
         if (res.isSuccess) {
           this.departments.set(res.data);
@@ -36,24 +39,38 @@ export class DepartmentsComponent implements OnInit {
     });
   }
 
-  createDepartment() {
-    if (!this.newDeptName) return;
-    
-    this.adminService.createDepartment(this.newDeptName).subscribe(res => {
+  save() {
+    if (!this.newDept.name) {
+      Swal.fire('Uyarı', 'Departman adı zorunludur.', 'warning');
+      return;
+    }
+
+    this.deptService.createDepartment(this.newDept).subscribe(res => {
       if (res.isSuccess) {
-        this.newDeptName = '';
+        Swal.fire('Başarılı', 'Departman eklendi.', 'success');
+        this.newDept = { name: '', description: '' };
         this.loadDepartments();
       }
     });
   }
 
-  deleteDepartment(id: string) {
-    if (confirm('Bu departmanı silmek istediğinize emin misiniz?')) {
-      this.adminService.deleteDepartment(id).subscribe(res => {
-        if (res.isSuccess) {
-          this.loadDepartments();
-        }
-      });
-    }
+  delete(id: string) {
+    Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu departman silinecektir!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deptService.deleteDepartment(id).subscribe(res => {
+          if (res.isSuccess) {
+            Swal.fire('Silindi', 'Departman başarıyla silindi.', 'success');
+            this.loadDepartments();
+          }
+        });
+      }
+    });
   }
 }

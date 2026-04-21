@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Result, PagedResult } from './announcement.service';
@@ -17,9 +17,8 @@ export interface Complaint {
   providedIn: 'root'
 })
 export class ComplaintService {
-  private apiUrl = 'http://localhost:5066/api/Complaints';
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private apiUrl = 'https://localhost:7273/api/Complaints';
 
   getComplaints(page: number = 1, size: number = 10): Observable<Result<PagedResult<Complaint>>> {
     return this.http.get<Result<PagedResult<Complaint>>>(`${this.apiUrl}?pageNumber=${page}&pageSize=${size}`);

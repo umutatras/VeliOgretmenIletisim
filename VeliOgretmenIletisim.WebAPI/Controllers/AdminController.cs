@@ -7,6 +7,8 @@ using VeliOgretmenIletisim.Application.Features.Departments.Queries.GetAllDepart
 using VeliOgretmenIletisim.Application.Features.Students.Commands.AdminAddStudent;
 using VeliOgretmenIletisim.Application.Features.Students.Queries.GetAllStudents;
 using VeliOgretmenIletisim.Application.Features.Teachers.Commands.AssignDepartment;
+using VeliOgretmenIletisim.Application.Features.Admin.Queries.GetUsersByRole;
+using VeliOgretmenIletisim.Domain.Enums;
 
 namespace VeliOgretmenIletisim.WebAPI.Controllers;
 
@@ -67,5 +69,11 @@ public class AdminController : BaseApiController
     public async Task<IActionResult> AssignDepartment([FromBody] AssignDepartmentCommand command)
     {
         return HandleResult(await Mediator.Send(command));
+    }
+
+    [HttpGet("users-by-role/{role}")]
+    public async Task<IActionResult> GetUsersByRole(UserRole role)
+    {
+        return HandleResult(await Mediator.Send(new GetUsersByRoleQuery(role)));
     }
 }

@@ -1,0 +1,91 @@
+<div class="page-header">
+    <h1 class="page-title">Müsaitlik Tanımla</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Görüşmeler</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Müsaitlik</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 col-xl-4">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Yeni Müsaitlik Zamanı</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Başlangıç Zamanı</label>
+                    <input type="datetime-local" class="form-control" [(ngModel)]="newSlot.startTime">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bitiş Zamanı</label>
+                    <input type="datetime-local" class="form-control" [(ngModel)]="newSlot.endTime">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Maksimum Kapasite</label>
+                    <input type="number" class="form-control" [(ngModel)]="newSlot.maxCapacity" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" [(ngModel)]="newSlot.isGroup">
+                        <span class="custom-control-label">Grup Görüşmesi mi?</span>
+                    </label>
+                </div>
+                <button class="btn btn-primary w-100" (click)="save()">
+                    <i class="fe fe-calendar me-1"></i> Takvime Ekle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-xl-8">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Tanımlı Müsaitliklerim</h3>
+            </div>
+            <div class="card-body">
+                @if (isLoading()) {
+                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-nowrap border-bottom">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Saat Aralığı</th>
+                                    <th>Kapasite</th>
+                                    <th>Tür</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (a of availabilities(); track a.id) {
+                                    <tr>
+                                        <td>{{ a.startTime | date:'dd.MM.yyyy' }}</td>
+                                        <td>{{ a.startTime | date:'HH:mm' }} - {{ a.endTime | date:'HH:mm' }}</td>
+                                        <td>{{ a.maxCapacity }} Kişi</td>
+                                        <td>
+                                            <span class="badge" [ngClass]="a.isGroup ? 'bg-info' : 'bg-success'">
+                                                {{ a.isGroup ? 'Grup' : 'Bireysel' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger"><i class="fe fe-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (availabilities().length === 0) {
+                                    <tr>
+                                        <td colspan="5" class="text-center p-4 text-muted">Henüz müsaitlik tanımlanmamış.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

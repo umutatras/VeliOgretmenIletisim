@@ -1,0 +1,80 @@
+<div class="page-header">
+    <h1 class="page-title">Profil Ayarları</h1>
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Genel</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Profil</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-4 col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Kişisel Bilgiler</h3>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <img [src]="profile()?.profilePicturePath || 'assets/images/users/8.jpg'" alt="profile-user" class="avatar avatar-xxl brround">
+                    <div class="mt-2">
+                        <label class="btn btn-sm btn-primary">
+                            <i class="fe fe-camera me-1"></i> Fotoğraf Değiştir
+                            <input type="file" (change)="onFileSelected($event)" hidden>
+                        </label>
+                    </div>
+                </div>
+                <h4 class="mb-1 fw-bold">{{ profile()?.fullName }}</h4>
+                <p class="text-muted">{{ profile()?.role }}</p>
+                <hr>
+                <div class="text-start">
+                    <p><strong>Kullanıcı Adı:</strong> {{ profile()?.userName }}</p>
+                    <p><strong>E-posta:</strong> {{ profile()?.email }}</p>
+                    <p><strong>Telefon:</strong> {{ profile()?.phoneNumber || 'Girilmemiş' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8 col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Şifre Değiştir</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Mevcut Şifre</label>
+                    <input type="password" class="form-control" [(ngModel)]="passwordData.oldPassword" placeholder="Eski şifreniz">
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Yeni Şifre</label>
+                            <input type="password" class="form-control" [(ngModel)]="passwordData.newPassword" placeholder="Minimum 6 karakter">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Yeni Şifre (Tekrar)</label>
+                            <input type="password" class="form-control" [(ngModel)]="passwordData.confirmPassword" placeholder="Şifreyi onaylayın">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-success mt-2" (click)="changePassword()">
+                    <i class="fe fe-save me-1"></i> Şifreyi Güncelle
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Hesap Durumu</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info py-2">
+                    <i class="fe fe-check-circle me-2"></i> Hesabınız şu an aktif ve tüm yetkileriniz tanımlanmış durumda.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

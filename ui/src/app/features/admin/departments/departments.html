@@ -12,18 +12,24 @@
     <div class="col-md-12 col-xl-4">
         <div class="card">
             <div class="card-header border-bottom">
-                <h3 class="card-title">Yeni Departman</h3>
+                <h3 class="card-title">Yeni Departman Ekle</h3>
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label class="form-label">Adı</label>
-                    <input type="text" class="form-control" [(ngModel)]="newDeptName" placeholder="örn: Matematik Bölümü">
+                    <label class="form-label">Departman Adı</label>
+                    <input type="text" class="form-control" [(ngModel)]="newDept.name" placeholder="Örn: Matematik, Rehberlik">
                 </div>
-                <button class="btn btn-primary w-100 mt-3" (click)="createDepartment()">Ekle</button>
+                <div class="form-group">
+                    <label class="form-label">Açıklama</label>
+                    <textarea class="form-control" rows="4" [(ngModel)]="newDept.description" placeholder="Departman hakkında kısa bilgi..."></textarea>
+                </div>
+                <button class="btn btn-primary w-100 mt-3" (click)="save()">
+                    <i class="fe fe-plus me-1"></i> Departmanı Kaydet
+                </button>
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-12 col-xl-8">
         <div class="card">
             <div class="card-header border-bottom">
@@ -35,21 +41,28 @@
                 } @else {
                     <div class="table-responsive">
                         <table class="table table-bordered text-nowrap border-bottom">
-                            <thead>
+                            <thead class="bg-light">
                                 <tr>
-                                    <th>Bölüm Adı</th>
+                                    <th>Departman Adı</th>
+                                    <th>Açıklama</th>
                                     <th>İşlem</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (dept of departments(); track dept.id) {
+                                @for (d of departments(); track d.id) {
                                     <tr>
-                                        <td class="fw-bold">{{ dept.name }}</td>
+                                        <td class="fw-bold text-primary">{{ d.name }}</td>
+                                        <td>{{ d.description || '-' }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-icon btn-danger" (click)="deleteDepartment(dept.id)">
+                                            <button class="btn btn-sm btn-icon btn-outline-danger" (click)="delete(d.id)">
                                                 <i class="fe fe-trash"></i>
                                             </button>
                                         </td>
+                                    </tr>
+                                }
+                                @if (departments().length === 0) {
+                                    <tr>
+                                        <td colspan="3" class="text-center p-4 text-muted">Henüz departman tanımlanmamış.</td>
                                     </tr>
                                 }
                             </tbody>

@@ -14,6 +14,12 @@ public class ParentsController : BaseApiController
         return HandleResult(await Mediator.Send(new GetMyTeachersQuery()));
     }
 
+    [HttpGet("my-students")]
+    public async Task<IActionResult> GetMyStudents()
+    {
+        return HandleResult(await Mediator.Send(new VeliOgretmenIletisim.Application.Features.Students.Queries.GetMyStudents.GetMyStudentsQuery()));
+    }
+
     [HttpPost("complaints")]
     public async Task<IActionResult> CreateComplaint([FromBody] CreateComplaintCommand command)
     {

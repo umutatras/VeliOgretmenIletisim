@@ -9,7 +9,50 @@
 </div>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 col-xl-4">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Yeni Öğrenci Ekle & Ata</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Adı</label>
+                    <input type="text" class="form-control" [(ngModel)]="newStudent.firstName" placeholder="Ad">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Soyadı</label>
+                    <input type="text" class="form-control" [(ngModel)]="newStudent.lastName" placeholder="Soyad">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Öğrenci Numarası</label>
+                    <input type="text" class="form-control" [(ngModel)]="newStudent.studentNumber" placeholder="Numara">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Veli Seçimi</label>
+                    <select class="form-control form-select" [(ngModel)]="newStudent.parentId">
+                        <option value="">Veli Seçiniz...</option>
+                        @for (p of parents(); track p.id) {
+                            <option [value]="p.id">{{ p.fullName }} ({{ p.email }})</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Öğretmen Seçimi</label>
+                    <select class="form-control form-select" [(ngModel)]="newStudent.teacherId">
+                        <option value="">Öğretmen Seçiniz...</option>
+                        @for (t of teachers(); track t.id) {
+                            <option [value]="t.id">{{ t.fullName }} ({{ t.email }})</option>
+                        }
+                    </select>
+                </div>
+                <button class="btn btn-primary w-100 mt-3" (click)="saveStudent()">
+                    <i class="fe fe-plus me-1"></i> Öğrenciyi Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-xl-8">
         <div class="card">
             <div class="card-header border-bottom">
                 <h3 class="card-title">Kayıtlı Öğrenciler</h3>
@@ -22,17 +65,23 @@
                         <table class="table table-bordered text-nowrap border-bottom">
                             <thead class="bg-light">
                                 <tr>
-                                    <th>Öğrenci No</th>
-                                    <th>Adı Soyadı</th>
-                                    <th>Veli Adı</th>
+                                    <th>No</th>
+                                    <th>Öğrenci</th>
+                                    <th>Veli</th>
+                                    <th>Öğretmen</th>
+                                    <th>İşlem</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (student of students(); track student.id) {
+                                @for (s of students(); track s.id) {
                                     <tr>
-                                        <td><span class="badge bg-primary-transparent text-primary fw-bold">{{ student.studentNumber }}</span></td>
-                                        <td class="fw-semibold">{{ student.firstName }} {{ student.lastName }}</td>
-                                        <td>{{ student.parentName }}</td>
+                                        <td>{{ s.studentNumber }}</td>
+                                        <td class="fw-bold">{{ s.firstName }} {{ s.lastName }}</td>
+                                        <td>{{ s.parentName }}</td>
+                                        <td>{{ s.teacherName || 'Atanmamış' }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger btn-icon"><i class="fe fe-trash"></i></button>
+                                        </td>
                                     </tr>
                                 }
                             </tbody>

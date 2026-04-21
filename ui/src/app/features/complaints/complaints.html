@@ -1,5 +1,5 @@
 <div class="page-header">
-    <h1 class="page-title">Şikayet & Talep Yönetimi</h1>
+    <h1 class="page-title">Şikayet & Talepler</h1>
     <div>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="javascript:void(0);">İletişim</a></li>
@@ -9,82 +9,122 @@
 </div>
 
 <div class="row">
-    <div class="col-md-12 col-lg-5 col-xl-4">
-        <div class="card">
-            <div class="card-header border-bottom">
-                <h3 class="card-title">{{ selectedComplaint() ? 'Talebi Yanıtla' : 'Yeni Talep Oluştur' }}</h3>
-            </div>
-            <div class="card-body">
-                @if (selectedComplaint()) {
-                    <div class="alert alert-info py-2">
-                        <strong>Seçili Talep:</strong> {{ selectedComplaint()?.subject }}
-                        <button class="btn btn-sm btn-link text-white ms-2" (click)="selectedComplaint.set(null)">İptal</button>
-                    </div>
-                    <div class="form-group text-dark mb-3">
-                        <p class="fs-13">{{ selectedComplaint()?.content }}</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Cevabınız</label>
-                        <textarea class="form-control" rows="4" [(ngModel)]="adminResponse" placeholder="Cevabınızı buraya yazın..."></textarea>
-                    </div>
-                    <button class="btn btn-success w-100 mt-2" (click)="submitResponse()">
-                        <i class="fe fe-send me-1"></i> Cevapla
-                    </button>
-                } @else {
+    <!-- Veli İçin Talep Gönderme Formu -->
+    @if (currentUser()?.role === 'Parent') {
+        <div class="col-md-12 col-xl-4">
+            <div class="card">
+                <div class="card-header border-bottom">
+                    <h3 class="card-title">Yeni Talep Oluştur</h3>
+                </div>
+                <div class="card-body">
                     <div class="form-group">
                         <label class="form-label">Konu</label>
-                        <input type="text" class="form-control" [(ngModel)]="subject" placeholder="Konu başlığı...">
+                        <input type="text" class="form-control" [(ngModel)]="subject" placeholder="Talebinizin konusunu belirtin">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Mesaj</label>
-                        <textarea class="form-control" rows="6" [(ngModel)]="content" placeholder="Mesajınız..."></textarea>
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" rows="5" [(ngModel)]="content" placeholder="Detayları buraya yazın..."></textarea>
                     </div>
-                    <button class="btn btn-primary w-100 mt-2" (click)="create()">
-                        <i class="fe fe-plus me-1"></i> Gönder
+                    <button class="btn btn-primary w-100" (click)="sendComplaint()">
+                        <i class="fe fe-send me-2"></i> Talebi Gönder
                     </button>
-                }
+                </div>
             </div>
         </div>
-    </div>
+    }
 
-    <div class="col-md-12 col-lg-7 col-xl-8">
+    <!-- Admin İçin Yanıt Paneli (Sadece Seçildiğinde Görünür) -->
+    @if (currentUser()?.role === 'Admin' && selectedComplaint) {
+        <div class="col-md-12 col-xl-4">
+            <div class="card border-primary">
+                <div class="card-header bg-primary-transparent border-bottom">
+                    <h3 class="card-title">Talebi Yanıtla</h3>
+                    <div class="card-options">
+                        <a href="javascript:void(0);" (click)="selectedComplaint = null" class="btn btn-sm btn-light text-danger"><i class="fe fe-x"></i></a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-2">Konu: <strong>{{ selectedComplaint.subject }}</strong></p>
+                    <div class="form-group">
+                        <label class="form-label">Yönetici Yanıtı</label>
+                        <textarea class="form-control" rows="4" [(ngModel)]="adminResponseText" placeholder="Yanıtınızı buraya yazın..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Durum Güncelle</label>
+                        <select class="form-control form-select" [(ngModel)]="adminResponseStatus">
+                            <option value="2">İnceleniyor</option>
+                            <option value="3">Tamamlandı</option>
+                            <option value="4">Reddedildi</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success w-100" (click)="submitAnswer()">
+                        <i class="fe fe-check me-2"></i> Yanıtı Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Liste Ekranı -->
+    <div [class]="(currentUser()?.role === 'Admin' || currentUser()?.role === 'Parent') ? 'col-md-12 col-xl-8' : 'col-md-12'">
         <div class="card">
             <div class="card-header border-bottom">
-                <h3 class="card-title">Tüm Talepler</h3>
+                <h3 class="card-title">{{ currentUser()?.role === 'Admin' ? 'Tüm Talepler' : 'Taleplerim' }}</h3>
             </div>
             <div class="card-body">
                 @if (isLoading()) {
-                    <div class="text-center p-5">
-                        <div class="spinner-border text-primary" role="status"></div>
-                    </div>
+                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
                 } @else {
                     <div class="table-responsive">
                         <table class="table table-bordered text-nowrap border-bottom">
-                            <thead>
+                            <thead class="bg-light">
                                 <tr>
+                                    <th>Tarih</th>
+                                    <th>Veli</th>
                                     <th>Konu</th>
                                     <th>Durum</th>
-                                    <th>Tarih</th>
                                     <th>İşlem</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (item of complaints(); track item.id) {
-                                    <tr>
-                                        <td>{{ item.subject }}</td>
+                                @for (c of complaints(); track c.id) {
+                                    <tr [class.bg-light-primary]="selectedComplaint?.id === c.id">
+                                        <td>{{ c.createdDate | date:'dd.MM.yyyy' }}</td>
+                                        <td>{{ c.parentName }}</td>
+                                        <td class="fw-semibold">{{ c.subject }}</td>
                                         <td>
-                                            @if (item.adminResponse) {
-                                                <span class="badge bg-success">Yanıtlandı</span>
+                                            <span class="badge" [ngClass]="getStatusBadgeClass(c.status)">{{ c.status }}</span>
+                                        </td>
+                                        <td>
+                                            @if (currentUser()?.role === 'Admin') {
+                                                <button class="btn btn-sm btn-primary" (click)="openAnswerModal(c)">
+                                                    <i class="fe fe-edit me-1"></i> Yanıtla
+                                                </button>
                                             } @else {
-                                                <span class="badge bg-warning">Beklemede</span>
+                                                <button class="btn btn-sm btn-outline-info"><i class="fe fe-eye"></i></button>
                                             }
                                         </td>
-                                        <td>{{ item.createdDate | date:'short' }}</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary" (click)="selectedComplaint.set(item)">
-                                                <i class="fe fe-eye me-1"></i> Detay
-                                            </button>
-                                        </td>
+                                    </tr>
+                                    <!-- expanded content for details -->
+                                    @if (selectedComplaint?.id === c.id || currentUser()?.role === 'Parent') {
+                                        <tr>
+                                            <td colspan="5" class="bg-light">
+                                                <div class="p-3">
+                                                    <p class="mb-1 text-muted small">Veli Mesajı:</p>
+                                                    <p class="mb-3">{{ c.content }}</p>
+                                                    @if (c.adminResponse) {
+                                                        <div class="alert alert-success mb-0">
+                                                            <strong>Admin Yanıtı:</strong> {{ c.adminResponse }}
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                @if (complaints().length === 0) {
+                                    <tr>
+                                        <td colspan="5" class="text-center p-4 text-muted">Kayıtlı talep bulunamadı.</td>
                                     </tr>
                                 }
                             </tbody>

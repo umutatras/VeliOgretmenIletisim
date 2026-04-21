@@ -6,5 +6,6 @@ namespace VeliOgretmenIletisim.Application.Features.Appointments.Commands.Assign
 public class AssignAppointmentCommand : IRequest<Result>
 {
     public Guid AvailabilityId { get; set; }
-    public Guid ParentId { get; set; }
+    public Guid StudentId { get; set; }
+    public string? Note { get; set; }
 }

@@ -14,7 +14,7 @@
             <div class="card-body">
                 <div class="d-flex">
                     <div class="text-white">
-                        <h2 class="mb-0 number-font">24</h2>
+                        <h2 class="mb-0 number-font">{{ stats()?.activeAnnouncementsCount || 0 }}</h2>
                         <p class="text-white mb-0">Aktif Duyuru</p>
                     </div>
                     <div class="ms-auto"> <i class="fe fe-megaphone text-white fs-30 me-2 mt-2"></i> </div>
@@ -27,7 +27,7 @@
             <div class="card-body">
                 <div class="d-flex">
                     <div class="text-white">
-                        <h2 class="mb-0 number-font">12</h2>
+                        <h2 class="mb-0 number-font">{{ stats()?.pendingAppointmentsCount || 0 }}</h2>
                         <p class="text-white mb-0">Yeni Randevu</p>
                     </div>
                     <div class="ms-auto"> <i class="fe fe-calendar text-white fs-30 me-2 mt-2"></i> </div>
@@ -40,7 +40,7 @@
             <div class="card-body">
                 <div class="d-flex">
                     <div class="text-white">
-                        <h2 class="mb-0 number-font">8</h2>
+                        <h2 class="mb-0 number-font">{{ stats()?.completedComplaintsCount || 0 }}</h2>
                         <p class="text-white mb-0">Tamamlanan Talep</p>
                     </div>
                     <div class="ms-auto"> <i class="fe fe-check-circle text-white fs-30 me-2 mt-2"></i> </div>
@@ -53,7 +53,7 @@
             <div class="card-body">
                 <div class="d-flex">
                     <div class="text-white">
-                        <h2 class="mb-0 number-font">450</h2>
+                        <h2 class="mb-0 number-font">{{ stats()?.totalStudentsCount || 0 }}</h2>
                         <p class="text-white mb-0">Toplam Öğrenci</p>
                     </div>
                     <div class="ms-auto"> <i class="fe fe-users text-white fs-30 me-2 mt-2"></i> </div>
@@ -72,26 +72,29 @@
             <div class="card-body">
                 @if (isLoading()) {
                     <div class="text-center p-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+                        <div class="spinner-border text-primary" role="status"></div>
                     </div>
                 } @else {
                     <div class="table-responsive">
-                        <table class="table table-bordered text-nowrap border-bottom" id="basic-datatable">
-                            <thead>
+                        <table class="table table-bordered text-nowrap border-bottom">
+                            <thead class="bg-light">
                                 <tr>
-                                    <th class="wd-15p border-bottom-0">Başlık</th>
-                                    <th class="wd-15p border-bottom-0">Tarih</th>
-                                    <th class="wd-20p border-bottom-0">İçerik</th>
+                                    <th>Başlık</th>
+                                    <th>Tarih</th>
+                                    <th>İçerik Özeti</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (item of announcements(); track item.id) {
+                                @for (item of stats()?.recentAnnouncements; track item.id) {
                                     <tr>
-                                        <td class="fw-bold">{{ item.title }}</td>
-                                        <td>{{ item.createdDate | date:'shortDate' }}</td>
+                                        <td class="fw-bold text-primary">{{ item.title }}</td>
+                                        <td>{{ item.createdDate | date:'dd.MM.yyyy' }}</td>
                                         <td>{{ item.content | slice:0:100 }}...</td>
+                                    </tr>
+                                }
+                                @if (stats()?.recentAnnouncements?.length === 0) {
+                                    <tr>
+                                        <td colspan="3" class="text-center p-4 text-muted">Henüz duyuru bulunmuyor.</td>
                                     </tr>
                                 }
                             </tbody>

@@ -2,6 +2,7 @@ using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using VeliOgretmenIletisim.Infrastructure.Hubs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +22,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddCors(options =>
@@ -130,6 +132,6 @@ app.UseAuthorization();
 app.UseRateLimiter(); // <--- Added here
 app.UseHangfireDashboard();
 app.MapControllers().RequireRateLimiting("fixed");
-app.MapHub<VeliOgretmenIletisim.Infrastructure.Hubs.NotificationHub>("/notifications");
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();

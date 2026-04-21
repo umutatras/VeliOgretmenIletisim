@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { FileService } from '../../../core/services/file.service';
 import { UserService } from '../../../core/services/user.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { Result } from '../../../core/services/announcement.service';
 
 @Component({
@@ -18,6 +19,7 @@ export class ShellComponent {
   private fileService = inject(FileService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private notificationService = inject(NotificationService);
 
   currentUser = this.authService.currentUser;
   userName = computed(() => this.currentUser()?.userName || 'User');
@@ -25,6 +27,7 @@ export class ShellComponent {
 
   constructor() {
     this.profilePicture.set(this.currentUser()?.profilePicturePath || null);
+    this.notificationService.startConnection();
   }
 
   logout() {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Result, PagedResult } from './announcement.service';
@@ -6,6 +6,7 @@ import { Result, PagedResult } from './announcement.service';
 export interface Department {
   id: string;
   name: string;
+  description?: string;
 }
 
 export interface Student {
@@ -14,6 +15,7 @@ export interface Student {
   lastName: string;
   studentNumber: string;
   parentName: string;
+  teacherName?: string;
 }
 
 export interface AuditLog {
@@ -29,21 +31,26 @@ export interface AuditLog {
   curlCommand?: string;
 }
 
+export interface UserBrief {
+  id: string;
+  fullName: string;
+  email: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:5066/api/Admin';
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private apiUrl = 'https://localhost:7273/api/Admin';
 
   // Departments
   getDepartments(): Observable<Result<Department[]>> {
     return this.http.get<Result<Department[]>>(`${this.apiUrl}/departments`);
   }
 
-  createDepartment(name: string): Observable<Result<any>> {
-    return this.http.post<Result<any>>(`${this.apiUrl}/departments`, { name });
+  createDepartment(dept: { name: string, description: string }): Observable<Result<any>> {
+    return this.http.post<Result<any>>(`${this.apiUrl}/departments`, dept);
   }
 
   deleteDepartment(id: string): Observable<Result<any>> {
@@ -53,6 +60,15 @@ export class AdminService {
   // Students
   getStudents(page: number = 1, size: number = 10): Observable<Result<PagedResult<Student>>> {
     return this.http.get<Result<PagedResult<Student>>>(`${this.apiUrl}/students?pageNumber=${page}&pageSize=${size}`);
+  }
+
+  createStudent(student: any): Observable<Result<any>> {
+    return this.http.post<Result<any>>(`${this.apiUrl}/students`, student);
+  }
+
+  // Users
+  getUsersByRole(role: string): Observable<Result<UserBrief[]>> {
+    return this.http.get<Result<UserBrief[]>>(`${this.apiUrl}/users-by-role/${role}`);
   }
 
   // Audit Logs

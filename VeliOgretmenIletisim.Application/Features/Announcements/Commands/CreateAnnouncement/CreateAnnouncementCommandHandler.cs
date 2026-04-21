@@ -11,11 +11,13 @@ public class CreateAnnouncementCommandHandler : IRequestHandler<CreateAnnounceme
 {
     private readonly IUnitOfWork _uow;
     private readonly ICurrentUserService _currentUserService;
+    private readonly VeliOgretmenIletisim.Application.Interfaces.Notifications.INotificationService _notificationService;
 
-    public CreateAnnouncementCommandHandler(IUnitOfWork uow, ICurrentUserService currentUserService)
+    public CreateAnnouncementCommandHandler(IUnitOfWork uow, ICurrentUserService currentUserService, VeliOgretmenIletisim.Application.Interfaces.Notifications.INotificationService notificationService)
     {
         _uow = uow;
         _currentUserService = currentUserService;
+        _notificationService = notificationService;
     }
 
     public async Task<Result> Handle(CreateAnnouncementCommand request, CancellationToken cancellationToken)
@@ -37,6 +39,8 @@ public class CreateAnnouncementCommandHandler : IRequestHandler<CreateAnnounceme
 
         await _uow.GetRepository<Announcement>().AddAsync(announcement);
         await _uow.SaveChangesAsync(cancellationToken);
+
+        await _notificationService.SendToAllAsync($"Yeni Duyuru: {announcement.Title}", "Duyuru");
 
         return Result.Success("Announcement published successfully.");
     }

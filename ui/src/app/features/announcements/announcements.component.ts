@@ -1,8 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnnouncementService, Announcement } from '../../core/services/announcement.service';
-import { FileService } from '../../core/services/file.service';
+import { AuthService } from '../../core/services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-announcements',
@@ -11,19 +12,19 @@ import { FileService } from '../../core/services/file.service';
   templateUrl: './announcements.html'
 })
 export class AnnouncementsComponent implements OnInit {
+  private announcementService = inject(AnnouncementService);
+  private authService = inject(AuthService);
+
   announcements = signal<Announcement[]>([]);
   isLoading = signal(true);
-  
-  // Regular strings for ngModel
-  title = '';
-  content = '';
-  attachmentPath: string | null = null;
-  isUploading = signal(false);
+  currentUser = this.authService.currentUser;
 
-  constructor(
-    private announcementService: AnnouncementService,
-    private fileService: FileService
-  ) {}
+  // Management Form
+  newAnnouncement = {
+    title: '',
+    content: '',
+    isGeneral: true
+  };
 
   ngOnInit() {
     this.loadAnnouncements();
@@ -31,53 +32,63 @@ export class AnnouncementsComponent implements OnInit {
 
   loadAnnouncements() {
     this.isLoading.set(true);
-    this.announcementService.getAll(1, 20).subscribe({
+    this.announcementService.getAnnouncements().subscribe({
       next: (res) => {
-        if (res.isSuccess) this.announcements.set(res.data.items);
+        if (res.isSuccess) {
+          this.announcements.set(res.data.items);
+        }
         this.isLoading.set(false);
       },
       error: () => this.isLoading.set(false)
     });
   }
 
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.isUploading.set(true);
-      this.fileService.upload(file, 'announcements').subscribe({
-        next: (res) => {
-          if (res.isSuccess) {
-            this.attachmentPath = res.data;
-          }
-          this.isUploading.set(false);
-        },
-        error: () => this.isUploading.set(false)
-      });
+  save() {
+    if (!this.newAnnouncement.title || !this.newAnnouncement.content) {
+      Swal.fire('Uyarı', 'Başlık ve içerik alanları zorunludur.', 'warning');
+      return;
     }
-  }
 
-  create() {
-    if (!this.title || !this.content) return;
-
-    this.announcementService.create({
-      title: this.title,
-      content: this.content,
-      attachmentPath: this.attachmentPath
-    }).subscribe(res => {
+    this.announcementService.createAnnouncement(this.newAnnouncement).subscribe(res => {
       if (res.isSuccess) {
-        this.title = '';
-        this.content = '';
-        this.attachmentPath = null;
+        Swal.fire({
+          icon: 'success',
+          title: 'Başarılı!',
+          text: 'Duyuru yayına alındı.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        this.resetForm();
         this.loadAnnouncements();
+      } else {
+        Swal.fire('Hata', res.message, 'error');
       }
     });
   }
 
   delete(id: string) {
-    if (confirm('Duyuruyu silmek istiyor musunuz?')) {
-      this.announcementService.delete(id).subscribe(res => {
-        if (res.isSuccess) this.loadAnnouncements();
-      });
-    }
+    Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Duyuru kalıcı olarak silinecektir!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.announcementService.deleteAnnouncement(id).subscribe(res => {
+          if (res.isSuccess) {
+            Swal.fire('Silindi!', 'Duyuru başarıyla kaldırıldı.', 'success');
+            this.loadAnnouncements();
+          }
+        });
+      }
+    });
+  }
+
+  resetForm() {
+    this.newAnnouncement = { title: '', content: '', isGeneral: true };
   }
 }

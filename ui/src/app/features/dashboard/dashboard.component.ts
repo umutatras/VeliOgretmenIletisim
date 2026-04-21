@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DashboardService, DashboardStats } from '../../core/services/dashboard.service';
 import { AuthService } from '../../core/services/auth.service';
-import { AnnouncementService, Announcement } from '../../core/services/announcement.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,34 +10,27 @@ import { AnnouncementService, Announcement } from '../../core/services/announcem
   templateUrl: './dashboard.html'
 })
 export class DashboardComponent implements OnInit {
-  userName = signal('');
-  announcements = signal<Announcement[]>([]);
-  isLoading = signal(true);
+  private dashboardService = inject(DashboardService);
+  private authService = inject(AuthService);
 
-  constructor(
-    private authService: AuthService,
-    private announcementService: AnnouncementService
-  ) {
-    this.userName.set(this.authService.currentUser()?.userName || 'User');
-  }
+  stats = signal<DashboardStats | null>(null);
+  isLoading = signal(true);
+  userName = computed(() => this.authService.currentUser()?.userName || 'User');
 
   ngOnInit() {
-    this.loadAnnouncements();
+    this.loadStats();
   }
 
-  loadAnnouncements() {
-    this.announcementService.getAll(1, 5).subscribe({
+  loadStats() {
+    this.isLoading.set(true);
+    this.dashboardService.getStats().subscribe({
       next: (res) => {
         if (res.isSuccess) {
-          this.announcements.set(res.data.items);
+          this.stats.set(res.data);
         }
         this.isLoading.set(false);
       },
       error: () => this.isLoading.set(false)
     });
-  }
-
-  logout() {
-    this.authService.logout();
   }
 }

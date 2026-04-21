@@ -1,21 +1,71 @@
 <div class="page-header">
-    <h1 class="page-title">Randevu Takvimi</h1>
+    <h1 class="page-title">Randevular</h1>
     <div>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="javascript:void(0);">İletişim</a></li>
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Genel</a></li>
             <li class="breadcrumb-item active" aria-current="page">Randevular</li>
         </ol>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header border-bottom d-flex align-items-center">
-                <h3 class="card-title">Randevu Kayıtları</h3>
-                <div class="ms-auto">
-                    <button class="btn btn-primary btn-sm"><i class="fe fe-calendar me-1"></i> Yeni Randevu Al</button>
+    <!-- Booking Form (Only for Parents) -->
+    @if (currentUser()?.role === 'Parent') {
+        <div class="col-md-12 col-xl-4">
+            <div class="card">
+                <div class="card-header border-bottom">
+                    <h3 class="card-title">Yeni Randevu Al</h3>
                 </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Öğrenci Seçimi</label>
+                        <select class="form-control form-select" [(ngModel)]="selectedStudentId" (change)="onStudentChange()">
+                            <option value="">Öğrenci Seçiniz...</option>
+                            @for (s of myStudents(); track s.id) {
+                                <option [value]="s.id">{{ s.fullName }} ({{ s.studentNumber }})</option>
+                            }
+                        </select>
+                    </div>
+
+                    @if (selectedStudent()) {
+                        <div class="alert alert-info py-2 mb-3">
+                            <small>Öğretmen: <strong>{{ selectedStudent()?.teacherName }}</strong></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Müsaitlik Zamanı</label>
+                            <select class="form-control form-select" [(ngModel)]="selectedAvailabilityId">
+                                <option value="">Zaman Dilimi Seçiniz...</option>
+                                @for (a of availabilities(); track a.id) {
+                                    <option [value]="a.id">
+                                        {{ a.startTime | date:'short' }} - {{ a.endTime | date:'short' }}
+                                    </option>
+                                }
+                            </select>
+                            @if (availabilities().length === 0) {
+                                <small class="text-danger">Bu öğretmenin henüz tanımlı müsaitliği yok.</small>
+                            }
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Not (Opsiyonel)</label>
+                            <textarea class="form-control" rows="3" [(ngModel)]="note" placeholder="Eklemek istediğiniz not..."></textarea>
+                        </div>
+
+                        <button class="btn btn-primary w-100" (click)="bookAppointment()" [disabled]="!selectedAvailabilityId">
+                            <i class="fe fe-check me-2"></i> Randevu Talebi Oluştur
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Appointment List -->
+    <div [class]="currentUser()?.role === 'Parent' ? 'col-md-12 col-xl-8' : 'col-md-12'">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h3 class="card-title">Randevu Listesi</h3>
             </div>
             <div class="card-body">
                 @if (isLoading()) {
@@ -26,31 +76,34 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th>Öğrenci</th>
-                                    <th>Veli</th>
                                     <th>Öğretmen</th>
-                                    <th>Tarih & Saat</th>
+                                    <th>Tarih</th>
                                     <th>Durum</th>
                                     <th>İşlem</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (item of appointments(); track item.id) {
+                                @for (app of appointments(); track app.id) {
                                     <tr>
-                                        <td class="fw-bold">{{ item.studentName }}</td>
-                                        <td>{{ item.parentName }}</td>
-                                        <td>{{ item.teacherName }}</td>
-                                        <td>{{ item.appointmentDate | date:'medium' }}</td>
+                                        <td class="fw-bold">{{ app.studentName }}</td>
+                                        <td>{{ app.teacherName }}</td>
+                                        <td>{{ app.appointmentDate | date:'dd.MM.yyyy HH:mm' }}</td>
                                         <td>
-                                            @switch (item.status) {
-                                                @case ('Approved') { <span class="badge bg-success">Onaylandı</span> }
-                                                @case ('Pending') { <span class="badge bg-warning">Beklemede</span> }
-                                                @case ('Cancelled') { <span class="badge bg-danger">İptal Edildi</span> }
-                                                @default { <span class="badge bg-secondary">{{ item.status }}</span> }
+                                            <span class="badge" [ngClass]="getStatusBadgeClass(app.status)">
+                                                {{ app.status }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-icon btn-outline-primary me-1"><i class="fe fe-eye"></i></button>
+                                            @if (app.status === 'Beklemede') {
+                                                <button class="btn btn-sm btn-icon btn-outline-danger"><i class="fe fe-x"></i></button>
                                             }
                                         </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-info btn-icon"><i class="fe fe-edit"></i></button>
-                                        </td>
+                                    </tr>
+                                }
+                                @if (appointments().length === 0) {
+                                    <tr>
+                                        <td colspan="5" class="text-center p-4 text-muted">Kayıtlı randevu bulunamadı.</td>
                                     </tr>
                                 }
                             </tbody>

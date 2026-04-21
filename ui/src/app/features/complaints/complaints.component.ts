@@ -1,7 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ComplaintService, Complaint } from '../../core/services/complaint.service';
+import { AuthService } from '../../core/services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-complaints',
@@ -10,17 +12,21 @@ import { ComplaintService, Complaint } from '../../core/services/complaint.servi
   templateUrl: './complaints.html'
 })
 export class ComplaintsComponent implements OnInit {
+  private complaintService = inject(ComplaintService);
+  private authService = inject(AuthService);
+
   complaints = signal<Complaint[]>([]);
   isLoading = signal(true);
-  
-  // Regular strings for ngModel
+  currentUser = this.authService.currentUser;
+
+  // Form Fields
   subject = '';
   content = '';
-
-  selectedComplaint = signal<Complaint | null>(null);
-  adminResponse = '';
-
-  constructor(private complaintService: ComplaintService) {}
+  
+  // Admin Response Fields
+  selectedComplaint: Complaint | null = null;
+  adminResponseText = '';
+  adminResponseStatus = 2; // Default to 'İnceleniyor' (assuming 2 is İnceleniyor, 3 is Tamamlandı)
 
   ngOnInit() {
     this.loadComplaints();
@@ -30,17 +36,24 @@ export class ComplaintsComponent implements OnInit {
     this.isLoading.set(true);
     this.complaintService.getComplaints().subscribe({
       next: (res) => {
-        if (res.isSuccess) this.complaints.set(res.data.items);
+        if (res.isSuccess) {
+          this.complaints.set(res.data.items);
+        }
         this.isLoading.set(false);
       },
       error: () => this.isLoading.set(false)
     });
   }
 
-  create() {
-    if (!this.subject || !this.content) return;
+  sendComplaint() {
+    if (!this.subject || !this.content) {
+      Swal.fire('Uyarı', 'Lütfen konu ve içerik girin.', 'warning');
+      return;
+    }
+
     this.complaintService.create(this.subject, this.content).subscribe(res => {
       if (res.isSuccess) {
+        Swal.fire('Gönderildi', 'Talebiniz başarıyla iletildi.', 'success');
         this.subject = '';
         this.content = '';
         this.loadComplaints();
@@ -48,16 +61,37 @@ export class ComplaintsComponent implements OnInit {
     });
   }
 
-  submitResponse() {
-    const comp = this.selectedComplaint();
-    if (!comp || !this.adminResponse) return;
+  openAnswerModal(complaint: Complaint) {
+    this.selectedComplaint = complaint;
+    this.adminResponseText = complaint.adminResponse || '';
+  }
 
-    this.complaintService.answer(comp.id, this.adminResponse, 1).subscribe(res => {
+  submitAnswer() {
+    if (!this.selectedComplaint || !this.adminResponseText) {
+      Swal.fire('Uyarı', 'Lütfen bir yanıt yazın.', 'warning');
+      return;
+    }
+
+    this.complaintService.answer(
+      this.selectedComplaint.id, 
+      this.adminResponseText, 
+      Number(this.adminResponseStatus)
+    ).subscribe(res => {
       if (res.isSuccess) {
-        this.adminResponse = '';
-        this.selectedComplaint.set(null);
+        Swal.fire('Başarılı', 'Talep yanıtlandı ve durum güncellendi.', 'success');
+        this.selectedComplaint = null;
         this.loadComplaints();
       }
     });
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'Beklemede': return 'bg-warning';
+      case 'İnceleniyor': return 'bg-info';
+      case 'Tamamlandı': return 'bg-success';
+      case 'Reddedildi': return 'bg-danger';
+      default: return 'bg-primary';
+    }
   }
 }

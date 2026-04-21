@@ -4,7 +4,7 @@
     <div class="app-header header sticky">
       <div class="container-fluid main-container">
         <div class="d-flex align-items-center">
-          <a class="logo-horizontal " href="index.html">
+          <a class="logo-horizontal " href="/">
             <div class="h3 font-weight-bold text-primary mb-0">SCHOOL CONNECT</div>
           </a>
           <div class="d-flex order-lg-2 ms-auto header-right-icons">
@@ -48,6 +48,13 @@
                 <span class="side-menu__label">Dashboard</span>
               </a>
             </li>
+            <li class="slide">
+              <a class="side-menu__item" routerLink="/profile" routerLinkActive="active">
+                <i class="side-menu__icon fe fe-user"></i>
+                <span class="side-menu__label">Profilim</span>
+              </a>
+            </li>
+
             <li class="sub-category">
               <h3>İletişim</h3>
             </li>
@@ -57,39 +64,58 @@
                 <span class="side-menu__label">Duyurular</span>
               </a>
             </li>
-            <li class="slide">
-              <a class="side-menu__item" routerLink="/complaints" routerLinkActive="active">
-                <i class="side-menu__icon fe fe-mail"></i>
-                <span class="side-menu__label">Şikayet & Talep</span>
-              </a>
-            </li>
-            <li class="slide">
-              <a class="side-menu__item" routerLink="/meeting-notes" routerLinkActive="active">
-                <i class="side-menu__icon fe fe-file-text"></i>
-                <span class="side-menu__label">Görüşme Notları</span>
-              </a>
-            </li>
-            <li class="sub-category">
-              <h3>Yönetim</h3>
-            </li>
-            <li class="slide">
-              <a class="side-menu__item" routerLink="/admin/departments" routerLinkActive="active">
-                <i class="side-menu__icon fe fe-layers"></i>
-                <span class="side-menu__label">Departmanlar</span>
-              </a>
-            </li>
-            <li class="slide">
-              <a class="side-menu__item" routerLink="/admin/students" routerLinkActive="active">
-                <i class="side-menu__icon fe fe-users"></i>
-                <span class="side-menu__label">Öğrenciler</span>
-              </a>
-            </li>
-            <li class="slide">
-              <a class="side-menu__item" routerLink="/admin/audit-logs" routerLinkActive="active">
-                <i class="side-menu__icon fe fe-database"></i>
-                <span class="side-menu__label">Sistem Logları</span>
-              </a>
-            </li>
+
+            <!-- Complaints: Hidden for Teachers (unless they handle it, but usually for Parents/Students) -->
+            @if (currentUser()?.role === 'Admin' || currentUser()?.role === 'Parent') {
+              <li class="slide">
+                <a class="side-menu__item" routerLink="/complaints" routerLinkActive="active">
+                  <i class="side-menu__icon fe fe-mail"></i>
+                  <span class="side-menu__label">Şikayet & Talep</span>
+                </a>
+              </li>
+            }
+
+            <!-- Meeting Notes: Only for Admin and Teachers -->
+            @if (currentUser()?.role === 'Admin' || currentUser()?.role === 'Teacher') {
+              <li class="slide">
+                <a class="side-menu__item" routerLink="/meeting-notes" routerLinkActive="active">
+                  <i class="side-menu__icon fe fe-file-text"></i>
+                  <span class="side-menu__label">Görüşme Notları</span>
+                </a>
+              </li>
+              <li class="slide">
+                <a class="side-menu__item" routerLink="/availabilities" routerLinkActive="active">
+                  <i class="side-menu__icon fe fe-calendar"></i>
+                  <span class="side-menu__label">Müsaitlik Tanımla</span>
+                </a>
+              </li>
+            }
+
+            <!-- Admin Section: Only for Admin -->
+            @if (currentUser()?.role === 'Admin') {
+              <li class="sub-category">
+                <h3>Yönetim</h3>
+              </li>
+              <li class="slide">
+                <a class="side-menu__item" routerLink="/admin/departments" routerLinkActive="active">
+                  <i class="side-menu__icon fe fe-layers"></i>
+                  <span class="side-menu__label">Departmanlar</span>
+                </a>
+              </li>
+              <li class="slide">
+                <a class="side-menu__item" routerLink="/admin/students" routerLinkActive="active">
+                  <i class="side-menu__icon fe fe-users"></i>
+                  <span class="side-menu__label">Öğrenciler</span>
+                </a>
+              </li>
+              <li class="slide">
+                <a class="side-menu__item" routerLink="/admin/audit-logs" routerLinkActive="active">
+                  <i class="side-menu__icon fe fe-database"></i>
+                  <span class="side-menu__label">Sistem Logları</span>
+                </a>
+              </li>
+            }
+
             <li class="sub-category">
               <h3>Hesap</h3>
             </li>

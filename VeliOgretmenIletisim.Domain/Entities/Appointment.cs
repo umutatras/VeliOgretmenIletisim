@@ -11,7 +11,11 @@ public class Appointment : BaseEntity, IAuditEntity, ISoftDelete
     public Guid ParentId { get; set; }
     public Parent Parent { get; set; } = null!;
 
+    public Guid? StudentId { get; set; }
+    public Student? Student { get; set; }
+
     public AppointmentStatus Status { get; set; }
+    public string? Note { get; set; }
     public string? TeacherNote { get; set; }
 
     // IAuditEntity

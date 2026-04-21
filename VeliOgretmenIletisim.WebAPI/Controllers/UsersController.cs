@@ -13,6 +13,13 @@ public class UsersController : BaseApiController
     }
 
     [Authorize]
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile()
+    {
+        return HandleResult(await Mediator.Send(new VeliOgretmenIletisim.Application.Features.Users.Queries.GetProfile.GetProfileQuery()));
+    }
+
+    [Authorize]
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] VeliOgretmenIletisim.Application.Features.Users.Commands.ChangePassword.ChangePasswordCommand command)
     {
