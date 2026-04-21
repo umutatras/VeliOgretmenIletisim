@@ -47,7 +47,7 @@ Proje, güncel yazılım standartlarına uygun olarak <b>Clean Architecture</b> 
 <h3>⚙️ Backend (Sunucu Tarafı)</h3>
 
 <ul>
-  <li><b>.NET 8 (C#):</b> Yüksek performanslı ve güvenilir Web API altyapısı</li>
+  <li><b>.NET 9 (C#):</b> Yüksek performanslı ve güvenilir Web API altyapısı</li>
 
   <li><b>Clean Architecture & CQRS (MediatR):</b>
     İş mantığının katmanlara ayrılması, Command (yazma) ve Query (okuma) işlemlerinin ayrıştırılması ile ölçeklenebilir yapı
@@ -67,7 +67,7 @@ Proje, güncel yazılım standartlarına uygun olarak <b>Clean Architecture</b> 
 <h3>🎨 Frontend (Kullanıcı Arayüzü)</h3>
 
 <ul>
-  <li><b>Angular 18:</b> Modern, hızlı ve SPA (Single Page Application) mimarisi</li>
+  <li><b>Angular 21:</b> Modern, hızlı ve SPA (Single Page Application) mimarisi</li>
 
   <li><b>Angular Signals & Standalone Components:</b>
     Daha reaktif ve performanslı Angular mimarisi
