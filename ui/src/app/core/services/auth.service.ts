@@ -63,7 +63,6 @@ export class AuthService {
     this.currentUser.set(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    this.router.navigate(['/auth/login']);
   }
 
   isLoggedIn(): boolean {

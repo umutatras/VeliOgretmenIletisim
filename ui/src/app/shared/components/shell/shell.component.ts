@@ -1,6 +1,6 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { FileService } from '../../../core/services/file.service';
@@ -17,6 +17,7 @@ export class ShellComponent {
   private authService = inject(AuthService);
   private fileService = inject(FileService);
   private userService = inject(UserService);
+  private router = inject(Router);
 
   currentUser = this.authService.currentUser;
   userName = computed(() => this.currentUser()?.userName || 'User');
@@ -27,13 +28,20 @@ export class ShellComponent {
   }
 
   logout() {
-    this.authService.logout();
     Swal.fire({
+      title: 'Çıkış Yapılıyor',
+      text: 'Oturumunuz güvenli bir şekilde sonlandırılıyor.',
       icon: 'info',
-      title: 'Oturum Kapatıldı',
-      text: 'Başarıyla çıkış yaptınız.',
-      timer: 2000,
-      showConfirmButton: false
+      timer: 1500,
+      showConfirmButton: false,
+      timerProgressBar: true,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+        this.authService.logout();
+      }
+    }).then(() => {
+      this.router.navigate(['/auth/login']);
     });
   }
 
